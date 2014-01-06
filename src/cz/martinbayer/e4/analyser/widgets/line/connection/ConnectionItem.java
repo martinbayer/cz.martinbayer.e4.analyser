@@ -1,10 +1,10 @@
-package cz.martinbayer.e4.analyser.palette;
+package cz.martinbayer.e4.analyser.widgets.line.connection;
 
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
 import cz.martinbayer.e4.analyser.widgets.line.Line;
+import cz.martinbayer.e4.analyser.widgets.line.LinePart;
 
 public class ConnectionItem extends Line {
 
@@ -38,9 +38,8 @@ public class ConnectionItem extends Line {
 		this.destinationItem = destinationItem;
 	}
 
-	public void move(int moveX, int moveY) {
-		Point actLocation = getLocation();
-		setLocation(actLocation.x + moveX, actLocation.y + moveY);
+	public void move(int moveX, int moveY, LinePart partType) {
+		moveLinePart(moveX, moveY, partType);
 	}
 
 }

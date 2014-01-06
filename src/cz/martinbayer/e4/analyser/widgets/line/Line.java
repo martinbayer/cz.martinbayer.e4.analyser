@@ -208,33 +208,47 @@ public class Line extends Composite implements Serializable, ILine {
 	}
 
 	private void initPolygons(Point startPoint, Point endPoint, int thickness) {
-		int dX = Math.abs(startPoint.x - endPoint.x);
-		int dY = Math.abs(startPoint.y - endPoint.y);
+		Point tempPoint;
+		Point startPointTemp = new Point(startPoint.x, startPoint.y);
+		Point endPointTemp = new Point(endPoint.x, endPoint.y);
+		// we need to have startPoint to be the point with lowest X
+		// coordinate
+		if (startPointTemp.x > endPointTemp.x) {
+			tempPoint = startPointTemp;
+			startPointTemp = endPointTemp;
+			endPointTemp = tempPoint;
+		}
+		int dX = Math.abs(startPointTemp.x - endPointTemp.x);
+		int dY = Math.abs(startPointTemp.y - endPointTemp.y);
 		double aTan;
 		aTan = Math.atan((double) dY / (double) dX);
 		int offsetX = (int) Math.ceil(Math.sin(aTan) * thickness / 2);
 		int offsetY = (int) Math.ceil(Math.cos(aTan) * thickness / 2);
 
-		boolean startPointLower = startPoint.y > endPoint.y;
+		boolean startPointLower = startPointTemp.y > endPointTemp.y;
 
 		// coordinates of holders on the ends of the line
 		int startPointX, startPointY, endPointX, endPointY;
 		if (startPointLower) {
-			p1 = new Point(startPoint.x - offsetX, startPoint.y - offsetY);
-			p2 = new Point(endPoint.x - offsetX, endPoint.y - offsetY);
-			p3 = new Point(endPoint.x + offsetX, endPoint.y + offsetY);
-			p4 = new Point(startPoint.x + offsetX, startPoint.y + offsetY);
+			p1 = new Point(startPointTemp.x - offsetX, startPointTemp.y
+					- offsetY);
+			p2 = new Point(endPointTemp.x - offsetX, endPointTemp.y - offsetY);
+			p3 = new Point(endPointTemp.x + offsetX, endPointTemp.y + offsetY);
+			p4 = new Point(startPointTemp.x + offsetX, startPointTemp.y
+					+ offsetY);
 		} else {
-			p1 = new Point(startPoint.x + offsetX, startPoint.y - offsetY);
-			p2 = new Point(endPoint.x + offsetX, endPoint.y - offsetY);
-			p3 = new Point(endPoint.x - offsetX, endPoint.y + offsetY);
-			p4 = new Point(startPoint.x - offsetX, startPoint.y + offsetY);
+			p1 = new Point(startPointTemp.x + offsetX, startPointTemp.y
+					- offsetY);
+			p2 = new Point(endPointTemp.x + offsetX, endPointTemp.y - offsetY);
+			p3 = new Point(endPointTemp.x - offsetX, endPointTemp.y + offsetY);
+			p4 = new Point(startPointTemp.x - offsetX, startPointTemp.y
+					+ offsetY);
 		}
 
-		startPointX = startPoint.x - thickness;
-		startPointY = startPoint.y - thickness;
-		endPointX = endPoint.x - thickness;
-		endPointY = endPoint.y - thickness;
+		startPointX = startPointTemp.x - thickness;
+		startPointY = startPointTemp.y - thickness;
+		endPointX = endPointTemp.x - thickness;
+		endPointY = endPointTemp.y - thickness;
 
 		startSpot = new Point(startPointX, startPointY);
 		endSpot = new Point(endPointX, endPointY);
@@ -270,28 +284,21 @@ public class Line extends Composite implements Serializable, ILine {
 	@Override
 	public void setStartPoint(int x, int y) {
 		this.startPoint = new Point(x, y);
+		System.out.println("new start point:" + this.startPoint);
 		fixLocalPoints();
 	}
 
 	@Override
 	public void setEndPoint(int x, int y) {
 		this.endPoint = new Point(x, y);
+		System.out.println("new end point:" + this.endPoint);
 		fixLocalPoints();
 	}
 
 	private void fixLocalPoints() {
 		if (startPoint != null && endPoint != null) {
-			Point tempPoint;
-			// we need to have startPoint to be the point with lowest X
-			// coordinate
-			if (startPoint.x > endPoint.x) {
-				tempPoint = startPoint;
-				startPoint = endPoint;
-				endPoint = tempPoint;
-			}
-			// because of previous condition, the startPointn is always the
-			// point with lowest X coordinate
-			int minX = startPoint.x;
+
+			int minX = Math.min(startPoint.x, endPoint.x);
 			int minY = Math.min(startPoint.y, endPoint.y);
 			this.localStartPoint.x = startPoint.x - minX;
 			this.localStartPoint.y = startPoint.y - minY;
@@ -311,28 +318,34 @@ public class Line extends Composite implements Serializable, ILine {
 		} else {
 			this.localEndPoint = new Point(0, 0);
 		}
+		setLocation(Line.countLocation(Line.this));
+		pack();
 	}
 
 	public static Point countLocation(Point startPoint, Point endPoint,
 			int offsetX, int offsetY) {
-		Point leftPoint = startPoint.x <= endPoint.x ? startPoint : endPoint;
-		Point rightPoint;
+		if (startPoint != null && endPoint != null) {
+			Point leftPoint = startPoint.x <= endPoint.x ? startPoint
+					: endPoint;
+			Point rightPoint;
 
-		if (leftPoint.equals(startPoint)) {
-			rightPoint = endPoint;
-		} else {
-			rightPoint = startPoint;
-		}
+			if (leftPoint.equals(startPoint)) {
+				rightPoint = endPoint;
+			} else {
+				rightPoint = startPoint;
+			}
 
-		Point location = new Point(leftPoint.x, -1);
-		if (leftPoint.y <= rightPoint.y) {
-			location.y = leftPoint.y;
-		} else {
-			location.y = rightPoint.y;
+			Point location = new Point(leftPoint.x, -1);
+			if (leftPoint.y <= rightPoint.y) {
+				location.y = leftPoint.y;
+			} else {
+				location.y = rightPoint.y;
+			}
+			location.x -= offsetX;
+			location.y -= offsetY;
+			return location;
 		}
-		location.x -= offsetX;
-		location.y -= offsetY;
-		return location;
+		return new Point(-1, -1);
 	}
 
 	public static Point countLocation(Line line) {
@@ -348,6 +361,24 @@ public class Line extends Composite implements Serializable, ILine {
 	@Override
 	public boolean isEndSpotSelected(int x, int y) {
 		return endSpotRegion.contains(x, y);
+	}
+
+	public void moveLinePart(int moveX, int moveY, LinePart partType) {
+		System.out.println("movement:" + new Point(moveX, moveY));
+		switch (partType) {
+		case START_SPOT:
+			setStartPoint(this.startPoint.x + moveX, this.startPoint.y + moveY);
+			break;
+		case END_SPOT:
+			setEndPoint(this.endPoint.x + moveX, this.endPoint.y + moveY);
+			break;
+		case LINE:
+			setStartPoint(this.startPoint.x + moveX, this.startPoint.y + moveY);
+			setEndPoint(this.endPoint.x + moveX, this.endPoint.y + moveY);
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override

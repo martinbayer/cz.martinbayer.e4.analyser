@@ -14,8 +14,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import cz.martinbayer.e4.analyser.palette.ConnectionItem;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
+import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
 
 public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 
@@ -28,7 +28,7 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 	private ImageDescriptor image;
 	private Point selectionOffsetPoint;
 	private ProcessorPaletteItem item;
-	private List<ConnectionItem> connectionItems;
+	private List<ItemConnectionConnector> connectionItems;
 	private CanvasItemEventHandler eventHandler;
 
 	public CanvasItem(Composite parent, int style,
@@ -113,7 +113,7 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 	public void move(int moveX, int moveY) {
 		Point actualLocation = getLocation();
 		setLocation(actualLocation.x + moveX, actualLocation.y + moveY);
-		for (ConnectionItem connection : connectionItems) {
+		for (ItemConnectionConnector connection : connectionItems) {
 			connection.move(moveX, moveY);
 		}
 	}
@@ -129,12 +129,11 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 	}
 
 	@Override
-	public boolean addConnection(ConnectionItem connection) {
-		if (!this.connectionItems.contains(connection)) {
-			this.connectionItems.add(connection);
+	public boolean addConnection(ItemConnectionConnector connector) {
+		if (!this.connectionItems.contains(connector)) {
+			this.connectionItems.add(connector);
 			return true;
 		}
 		return false;
-
 	}
 }

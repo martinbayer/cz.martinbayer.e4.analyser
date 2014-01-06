@@ -18,11 +18,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
-import cz.martinbayer.e4.analyser.palette.ConnectionItem;
 import cz.martinbayer.e4.analyser.palette.ConnectionPaletteItem;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
-import cz.martinbayer.e4.analyser.widgets.line.Line;
+import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItemDnDData;
+import cz.martinbayer.e4.analyser.widgets.line.LinePart;
+import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
+import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
 
 public class CanvasMouseAdapter extends MouseAdapter {
 
@@ -52,7 +54,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 				&& ((ProcessorPaletteItem) selectedPaletteItem).getParent() != null) {
 			handleProcessorItemCreation(e,
 					(ProcessorPaletteItem) selectedPaletteItem);
-		} else if (selectedPaletteItem instanceof ConnectionPaletteItem) {
+		} else {
 			handleConnectionCreation(e);
 		}
 
@@ -74,36 +76,44 @@ public class CanvasMouseAdapter extends MouseAdapter {
 	public void handleConnectionCreation(MouseEvent e) {
 		ConnectionItem connection = null;
 		CanvasItem selectedItem;
-
-		if ((selectedItem = mainCanvas.getSelectedItem()) != null) {
-			int xCoord = selectedItem.getLocation().x + e.x;
-			int yCoord = selectedItem.getLocation().y + e.y;
-			if ((connection = (ConnectionItem) application.getContext().get(
-					ConnectionItem.ACTIVE_CONNECTION)) == null) {
-				connection = new ConnectionItem(canvas, SWT.NONE);
-				// canvas is notified about the operations made over the line
-				connection.addLineEventListener(new CanvasLineEventListener(
-						mainCanvas));
-				if (mainCanvas.getSelectedItem().addConnection(connection)) {
-					connection.setStartPoint(xCoord, yCoord);
-					application.getContext().set(
-							ConnectionItem.ACTIVE_CONNECTION, connection);
+		Object selectedPaletteItem = application.getContext().get(
+				ContextVariables.PALETTE_SELECTED_ITEM);
+		if (selectedPaletteItem instanceof ConnectionPaletteItem) {
+			if ((selectedItem = mainCanvas.getSelectedItem()) != null) {
+				int xCoord = selectedItem.getLocation().x + e.x;
+				int yCoord = selectedItem.getLocation().y + e.y;
+				if ((connection = (ConnectionItem) application.getContext()
+						.get(ConnectionItem.ACTIVE_CONNECTION)) == null) {
+					connection = new ConnectionItem(canvas, SWT.NONE);
+					// canvas is notified about the operations made over the
+					// line
+					connection
+							.addLineEventListener(new CanvasLineEventListener(
+									mainCanvas));
+					if (mainCanvas.getSelectedItem().addConnection(
+							new ItemConnectionConnector(connection,
+									selectedItem, LinePart.START_SPOT))) {
+						connection.setStartPoint(xCoord, yCoord);
+						application.getContext().set(
+								ConnectionItem.ACTIVE_CONNECTION, connection);
+					}
+				} else {
+					// do not allow to add the connection to the same item
+					if (mainCanvas.getVisitedItem().addConnection(
+							new ItemConnectionConnector(connection,
+									selectedItem, LinePart.END_SPOT))) {
+						connection.setEndPoint(xCoord, yCoord);
+						connection.pack();
+						mainComposite.setMinSize(canvas.computeSize(
+								SWT.DEFAULT, SWT.DEFAULT));
+						application.getContext().set(
+								ContextVariables.PALETTE_SELECTED_ITEM, null);
+						application.getContext().set(
+								ConnectionItem.ACTIVE_CONNECTION, null);
+					}
 				}
-			} else {
-				// do not allow to add the connection to the same item
-				if (mainCanvas.getVisitedItem().addConnection(connection)) {
-					connection.setEndPoint(xCoord, yCoord);
-					connection.setLocation(Line.countLocation(connection));
-					connection.pack();
-					mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
-							SWT.DEFAULT));
-					application.getContext().set(
-							ContextVariables.PALETTE_SELECTED_ITEM, null);
-					application.getContext().set(
-							ConnectionItem.ACTIVE_CONNECTION, null);
-				}
+				connection.moveAbove(null);
 			}
-			connection.moveAbove(null);
 		}
 	}
 
@@ -113,6 +123,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 		DragSource source = new DragSource(control, operations);
 		source.setTransfer(types);
 		source.addDragListener(new DragSourceListener() {
+
+			Point dragStartPoint = null;
 
 			@Override
 			public void dragStart(DragSourceEvent event) {
@@ -141,6 +153,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 				event.offsetX = event.x;
 				event.offsetY = event.y;
 				Point offsetPoint = new Point(event.offsetX, event.offsetY);
+				dragStartPoint = new Point(selectedItem.getLocation().x
+						+ event.x, selectedItem.getLocation().y + event.y);
 				selectedItem.setSelectionOffsetPoint(offsetPoint);
 				application.getContext()
 						.set(SELECTED_CANVAS_ITEM, selectedItem);
@@ -148,7 +162,9 @@ public class CanvasMouseAdapter extends MouseAdapter {
 
 			@Override
 			public void dragSetData(DragSourceEvent event) {
-
+				CanvasItemDnDData data = new CanvasItemDnDData();
+				data.setSourcePoint(dragStartPoint);
+				event.data = data;
 			}
 
 			@Override
@@ -156,8 +172,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 				mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
 						SWT.DEFAULT));
 				selectedItem = null;
+				dragStartPoint = null;
 			}
 		});
 	}
-
 }

@@ -1,6 +1,6 @@
 package cz.martinbayer.e4.analyser.widgets.canvasitem;
 
-import cz.martinbayer.e4.analyser.palette.ConnectionItem;
+import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
 
 public interface ICanvasItem {
 
@@ -10,5 +10,5 @@ public interface ICanvasItem {
 
 	void removeCanvasItemEventListener(ICanvasItemEventListener listener);
 
-	boolean addConnection(ConnectionItem connection);
+	boolean addConnection(ItemConnectionConnector connector);
 }
