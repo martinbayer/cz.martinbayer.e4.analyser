@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmi:id="_AslsYGo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ide.application" bindingContexts="_AslsaWo2EeOdoIxfdkOPNA">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_AslsYWo2EeOdoIxfdkOPNA" label="cz.martinbayer.e4.analyser" width="500" height="400">
+    <children xsi:type="advanced:PerspectiveStack" xmi:id="_DdqdIGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.perspectivestack.0">
+      <children xsi:type="advanced:Perspective" xmi:id="_D-ddEGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.perspective.0">
+        <children xsi:type="basic:PartSashContainer" xmi:id="_kgEuIGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.partsashcontainer.0" horizontal="true">
+          <children xsi:type="basic:PartStack" xmi:id="_myVEoGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.partstack.0" containerData="20">
+            <children xsi:type="basic:Part" xmi:id="_nHmxEGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.palette.PalettePart" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.palette.PalettePart" label="Palette" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/palette.png"/>
+          </children>
+          <children xsi:type="basic:PartStack" xmi:id="_No6TsGpIEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.partstack.1" containerData="80">
+            <children xsi:type="basic:Part" xmi:id="_AYAeUGpIEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.part.1" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.MainCanvas" label="Canvas"/>
+          </children>
+        </children>
+      </children>
+    </children>
+  </children>
+  <rootContext xmi:id="_AslsaWo2EeOdoIxfdkOPNA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_Aslsamo2EeOdoIxfdkOPNA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
+    <children xmi:id="_Aslsa2o2EeOdoIxfdkOPNA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <addons xmi:id="_AslsYmo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_AslsY2o2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_AslsZGo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_AslsZWo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_AslsZmo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_AslsZ2o2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_AslsaGo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+</application:Application>
