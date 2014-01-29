@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import cz.martinbayer.analyser.logic.processor.LogProcessor;
-import cz.martinbayer.analyser.processorsPool.ProcessorPluginWrapper;
+import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
+import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.helper.ProcessorTypeResolver;
 
 public class PaletteItemResolver {
@@ -17,11 +18,11 @@ public class PaletteItemResolver {
 	 * @return
 	 */
 	public static List<RootPaletteItem> resolveProcessors(
-			List<ProcessorPluginWrapper> processors) {
+			List<IProcessorItemWrapper<IXMLog>> processors) {
 		HashMap<String, RootPaletteItem> roots = new HashMap<>();
-		LogProcessor proc = null;
+		LogProcessor<IXMLog> proc = null;
 		String procTypeName = null;
-		for (ProcessorPluginWrapper processor : processors) {
+		for (IProcessorItemWrapper<IXMLog> processor : processors) {
 			proc = processor.getProcessorLogic().getProcessor();
 			procTypeName = ProcessorTypeResolver.getLabel(proc);
 			if (!roots.containsKey(procTypeName)) {
@@ -30,7 +31,8 @@ public class PaletteItemResolver {
 			}
 			RootPaletteItem actualRoot = roots.get(procTypeName);
 			ProcessorPaletteItem newItem = new ProcessorPaletteItem(
-					processor.getPaletteItem(), processor.getProcessorLogic());
+					processor.getProcessorPaletteItem(),
+					processor.getProcessorLogic());
 			newItem.setParent(actualRoot);
 			actualRoot.addChild(newItem);
 		}

@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -14,6 +17,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import cz.martinbayer.e4.analyser.canvas.utils.HighlightType;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
 
@@ -30,6 +34,9 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 	private ProcessorPaletteItem item;
 	private List<ItemConnectionConnector> connectionItems;
 	private CanvasItemEventHandler eventHandler;
+
+	@Inject
+	private MApplication application;
 
 	public CanvasItem(Composite parent, int style,
 			ProcessorPaletteItem selectedObject) {
@@ -51,10 +58,11 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 	}
 
 	@Override
-	public void setHighlighted(boolean highlighted) {
-		if (highlighted) {
+	public void setHighlighted(HighlightType highlightType) {
+		System.out.println(application == null);
+		if (highlightType != null) {
 			setBackground(getDisplay().getSystemColor(
-					SWT.COLOR_WIDGET_DARK_SHADOW));
+					highlightType.getSwtColorCode()));
 		} else {
 			setBackground(null);
 		}
@@ -66,6 +74,8 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 			@Override
 			public void paintControl(PaintEvent e) {
 				e.gc.drawImage(image.createImage(), 5, 5);
+				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_RED));
+				e.gc.drawRectangle(0, 0, getBounds().width, getBounds().height);
 			}
 		});
 		addMouseMoveListener(eventHandler);
@@ -75,8 +85,7 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
-		return new Point(image.getImageData().width + 15,
-				image.getImageData().height + 15);
+		return new Point(imageSize.x + 15, imageSize.y + 15);
 	}
 
 	private void checkImage(ImageDescriptor image) {

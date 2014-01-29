@@ -1,7 +1,9 @@
 package cz.martinbayer.e4.analyser.widgets.line;
 
 import java.awt.Polygon;
+import java.awt.geom.Line2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -76,6 +78,10 @@ public class Line extends Composite implements Serializable, ILine {
 	 * removed by removeLineEventListener)
 	 */
 	private LineEventHandler lineHandler;
+
+	private Rectangle startAreaRect;
+
+	private Rectangle endAreaRect;
 
 	/**
 	 * Constructor
@@ -283,14 +289,26 @@ public class Line extends Composite implements Serializable, ILine {
 
 	@Override
 	public void setStartPoint(int x, int y) {
+		this.setStartPoint(x, y, null);
+	}
+
+	@Override
+	public void setStartPoint(int x, int y, Rectangle startAreaRect) {
 		this.startPoint = new Point(x, y);
+		this.startAreaRect = startAreaRect;
 		System.out.println("new start point:" + this.startPoint);
 		fixLocalPoints();
 	}
 
 	@Override
 	public void setEndPoint(int x, int y) {
+		this.setEndPoint(x, y, null);
+	}
+
+	@Override
+	public void setEndPoint(int x, int y, Rectangle endAreaRect) {
 		this.endPoint = new Point(x, y);
+		this.endAreaRect = endAreaRect;
 		System.out.println("new end point:" + this.endPoint);
 		fixLocalPoints();
 	}
@@ -300,10 +318,12 @@ public class Line extends Composite implements Serializable, ILine {
 
 			int minX = Math.min(startPoint.x, endPoint.x);
 			int minY = Math.min(startPoint.y, endPoint.y);
+
 			this.localStartPoint.x = startPoint.x - minX;
 			this.localStartPoint.y = startPoint.y - minY;
 			this.localEndPoint.x = endPoint.x - minX;
 			this.localEndPoint.y = endPoint.y - minY;
+
 			initPolygons(localStartPoint, localEndPoint, DEFAULT_WIDTH
 					+ REGION_PADDING);
 			region = new Region();
@@ -320,6 +340,77 @@ public class Line extends Composite implements Serializable, ILine {
 		}
 		setLocation(Line.countLocation(Line.this));
 		pack();
+	}
+
+	private Point movePointsToSourceEdges(Point mainPoint, Rectangle mainRect,
+			Point secondPoint) {
+		// count if the intersection of the line created based on
+		// mainPoint/secondPoint and rectangle is place on TOP/BOTTOM/LEFT/RIGHT
+		// edges
+		Point intersectionPoint = getIntersectionPoint(mainPoint, mainRect,
+				secondPoint);
+		return intersectionPoint;
+
+	}
+
+	private Point getIntersectionPoint(Point mainPoint, Rectangle mainRect,
+			Point secondPoint) {
+
+		Point p = null;
+		Line2D mainLine = new Line2D.Float();
+		mainLine.setLine(mainPoint.x, mainPoint.y, secondPoint.x, secondPoint.y);
+
+		// temporary lines presenting each rectangle edge
+		ArrayList<Line2D> tempLines = new ArrayList<Line2D>();
+		// check top line
+		tempLines.add(new Line2D.Float(mainRect.x, mainRect.y, mainRect.x
+				+ mainRect.width, mainRect.y));
+		// check bottom line
+		tempLines.add(new Line2D.Float(mainRect.x,
+				mainRect.y + mainRect.height, mainRect.x + mainRect.width,
+				mainRect.y + mainRect.height));
+		// check left line
+		tempLines.add(new Line2D.Float(mainRect.x, mainRect.y, mainRect.x,
+				mainRect.y + mainRect.height));
+		// check right line
+		tempLines.add(new Line2D.Float(mainRect.x + mainRect.width, mainRect.y,
+				mainRect.x + mainRect.width, mainRect.y + mainRect.height));
+		for (Line2D tempLine : tempLines) {
+			p = getIntersectionPoint(mainLine, tempLine);
+			if (p != null) {
+				return p;
+			}
+		}
+		return p;
+	}
+
+	private Point getIntersectionPoint(Line2D lineA, Line2D lineB) {
+
+		double x1 = lineA.getX1();
+		double y1 = lineA.getY1();
+		double x2 = lineA.getX2();
+		double y2 = lineA.getY2();
+
+		double x3 = lineB.getX1();
+		double y3 = lineB.getY1();
+		double x4 = lineB.getX2();
+		double y4 = lineB.getY2();
+
+		Point p = null;
+
+		double d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+		if (d != 0) {
+			double xi = ((x3 - x4) * (x1 * y2 - y1 * x2) - (x1 - x2)
+					* (x3 * y4 - y3 * x4))
+					/ d;
+			double yi = ((y3 - y4) * (x1 * y2 - y1 * x2) - (y1 - y2)
+					* (x3 * y4 - y3 * x4))
+					/ d;
+
+			p = new Point((int) xi, (int) yi);
+
+		}
+		return p;
 	}
 
 	public static Point countLocation(Point startPoint, Point endPoint,

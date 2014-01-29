@@ -1,9 +1,10 @@
 package cz.martinbayer.e4.analyser.helper;
 
-import cz.martinbayer.analyser.logic.processor.ConditionalProcessor;
-import cz.martinbayer.analyser.logic.processor.InputProcessor;
-import cz.martinbayer.analyser.logic.processor.LogProcessor;
-import cz.martinbayer.analyser.logic.processor.OutputProcessor;
+import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.types.ConditionalProcessor;
+import cz.martinbayer.analyser.processors.types.InputProcessor;
+import cz.martinbayer.analyser.processors.types.LogProcessor;
+import cz.martinbayer.analyser.processors.types.OutputProcessor;
 
 public class ProcessorTypeResolver {
 	public enum ProcessorType {
@@ -29,7 +30,7 @@ public class ProcessorTypeResolver {
 		}
 	}
 
-	public static ProcessorType getType(LogProcessor p) {
+	public static ProcessorType getType(LogProcessor<IXMLog> p) {
 		if (p instanceof InputProcessor) {
 			return ProcessorType.INPUT_PROCESSOR;
 		}
@@ -44,7 +45,7 @@ public class ProcessorTypeResolver {
 		return null;
 	}
 
-	public static String getIcon(LogProcessor p) {
+	public static String getIcon(LogProcessor<IXMLog> p) {
 		StringBuffer iconName = new StringBuffer();
 		iconName.append(getType(p).getIconName());
 		iconName.append(".png");

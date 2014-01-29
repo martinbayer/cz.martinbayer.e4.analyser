@@ -1,5 +1,7 @@
 package cz.martinbayer.e4.analyser.widgets.line;
 
+import org.eclipse.swt.graphics.Rectangle;
+
 public interface ILine {
 
 	/**
@@ -26,5 +28,9 @@ public interface ILine {
 	void setStartPoint(int x, int y);
 
 	void setEndPoint(int x, int y);
+
+	void setStartPoint(int x, int y, Rectangle startAreaRect);
+
+	void setEndPoint(int x, int y, Rectangle endAreaRect);
 
 }

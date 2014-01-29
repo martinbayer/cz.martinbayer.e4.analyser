@@ -25,8 +25,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
-import cz.martinbayer.e4.analyser.canvas.areas.InputProcessorsArea;
-import cz.martinbayer.e4.analyser.canvas.areas.OutputProcessorsArea;
 import cz.martinbayer.e4.analyser.canvas.utils.CanvasItemsLocator;
 import cz.martinbayer.e4.analyser.palette.ConnectionPaletteItem;
 import cz.martinbayer.e4.analyser.palette.PaletteItem;
@@ -61,11 +59,6 @@ public class MainCanvas implements ICanvas {
 				| SWT.V_SCROLL | SWT.BORDER);
 
 		Composite child = new Composite(scrolledComposite, SWT.NONE);
-		InputProcessorsArea inputProcArea = new InputProcessorsArea(this);
-		child.addPaintListener(inputProcArea);
-
-		OutputProcessorsArea outputProcArea = new OutputProcessorsArea(this);
-		child.addPaintListener(outputProcArea);
 
 		child.setLayout(null);
 		initListeners(child);
@@ -105,16 +98,9 @@ public class MainCanvas implements ICanvas {
 						Point newLocation = dt.getControl().toControl(
 								new Point(event.x, event.y));
 
-						// Point newLocation = dt.getControl().toControl(
-						// new Point(event.x - offset.x, event.y
-						// - offset.y));
-
-						// selectedItem.setLocation(newLocation.x,
-						// newLocation.y);
 						selectedItem.move(newLocation.x - movementPoint.x,
 								newLocation.y - movementPoint.y);
 						CanvasItemsLocator.normalizeLocations(canvasItems);
-						canvas.redraw();
 					}
 				}
 			}

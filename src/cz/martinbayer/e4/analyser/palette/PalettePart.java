@@ -15,7 +15,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import cz.martinbayer.analyser.processorsPool.ProcessorPluginWrapper;
+import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
+import cz.martinbayer.analyser.processors.model.IXMLog;
 import cz.martinbayer.analyser.processorsPool.ProcessorsPool;
 
 /**
@@ -40,8 +41,8 @@ public class PalettePart {
 		viewer.setContentProvider(new ProcessorsContentProvider());
 		viewer.setLabelProvider(new ProcessorsLabelProvider());
 
-		List<ProcessorPluginWrapper> processors = ProcessorsPool.getInstance()
-				.getProcessors();
+		List<IProcessorItemWrapper<IXMLog>> processors = ProcessorsPool
+				.getInstance().getProcessors();
 		List<RootPaletteItem> roots = PaletteItemResolver
 				.resolveProcessors(processors);
 

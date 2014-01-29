@@ -7,6 +7,8 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 
+import cz.martinbayer.e4.analyser.canvas.utils.HighlightType;
+
 public class CanvasItemEventHandler implements MouseMoveListener,
 		MouseListener, MouseTrackListener {
 
@@ -42,13 +44,14 @@ public class CanvasItemEventHandler implements MouseMoveListener,
 
 	@Override
 	public void mouseEnter(MouseEvent e) {
-		item.setHighlighted(true);
+		item.setHighlighted(HighlightType.HIGHLIGHT);
+
 		fireItemVisited(e);
 	}
 
 	@Override
 	public void mouseExit(MouseEvent e) {
-		item.setHighlighted(false);
+		item.setHighlighted(null);
 	}
 
 	@Override

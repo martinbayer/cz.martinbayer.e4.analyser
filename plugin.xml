@@ -11,6 +11,10 @@
                name="applicationCSS"
                value="platform:/plugin/cz.martinbayer.e4.analyser/css/default.css">
          </property>
+         <property
+               name="appName"
+               value="cz.martinbayer.e4.analyser">
+         </property>
       </product>
    </extension>
 

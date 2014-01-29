@@ -93,7 +93,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 					if (mainCanvas.getSelectedItem().addConnection(
 							new ItemConnectionConnector(connection,
 									selectedItem, LinePart.START_SPOT))) {
-						connection.setStartPoint(xCoord, yCoord);
+						connection.setStartPoint(xCoord, yCoord,
+								selectedItem.getBounds());
 						application.getContext().set(
 								ConnectionItem.ACTIVE_CONNECTION, connection);
 					}
@@ -102,7 +103,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 					if (mainCanvas.getVisitedItem().addConnection(
 							new ItemConnectionConnector(connection,
 									selectedItem, LinePart.END_SPOT))) {
-						connection.setEndPoint(xCoord, yCoord);
+						connection.setEndPoint(xCoord, yCoord,
+								selectedItem.getBounds());
 						connection.pack();
 						mainComposite.setMinSize(canvas.computeSize(
 								SWT.DEFAULT, SWT.DEFAULT));
