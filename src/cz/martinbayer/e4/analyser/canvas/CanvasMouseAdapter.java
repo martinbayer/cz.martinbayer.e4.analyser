@@ -49,7 +49,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 	@Override
 	public void mouseDown(MouseEvent e) {
 		Object selectedPaletteItem = application.getContext().get(
-				ContextVariables.PALETTE_SELECTED_ITEM);
+				ContextVariables.PALETTE_SELECTED_ITEM_KEY);
 		if (selectedPaletteItem instanceof ProcessorPaletteItem
 				&& ((ProcessorPaletteItem) selectedPaletteItem).getParent() != null) {
 			handleProcessorItemCreation(e,
@@ -69,7 +69,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 		initDnD(item);
 		mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		mainCanvas.addItem(item);
-		application.getContext().set(ContextVariables.PALETTE_SELECTED_ITEM,
+		application.getContext().set(ContextVariables.PALETTE_SELECTED_ITEM_KEY,
 				null);
 	}
 
@@ -77,7 +77,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 		ConnectionItem connection = null;
 		CanvasItem selectedItem;
 		Object selectedPaletteItem = application.getContext().get(
-				ContextVariables.PALETTE_SELECTED_ITEM);
+				ContextVariables.PALETTE_SELECTED_ITEM_KEY);
 		if (selectedPaletteItem instanceof ConnectionPaletteItem) {
 			if ((selectedItem = mainCanvas.getSelectedItem()) != null) {
 				int xCoord = selectedItem.getLocation().x + e.x;
@@ -109,7 +109,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 						mainComposite.setMinSize(canvas.computeSize(
 								SWT.DEFAULT, SWT.DEFAULT));
 						application.getContext().set(
-								ContextVariables.PALETTE_SELECTED_ITEM, null);
+								ContextVariables.PALETTE_SELECTED_ITEM_KEY, null);
 						application.getContext().set(
 								ConnectionItem.ACTIVE_CONNECTION, null);
 					}

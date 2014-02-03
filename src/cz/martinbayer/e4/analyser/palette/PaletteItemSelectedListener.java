@@ -18,7 +18,7 @@ public class PaletteItemSelectedListener implements ISelectionChangedListener {
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		this.application.getContext()
-				.set(ContextVariables.PALETTE_SELECTED_ITEM,
+				.set(ContextVariables.PALETTE_SELECTED_ITEM_KEY,
 						((IStructuredSelection) event.getSelection())
 								.getFirstElement());
 	}

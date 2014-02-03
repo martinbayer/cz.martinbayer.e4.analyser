@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="cz.martinbayer.e4.analyser" id="cz.martinbayer.e4.analyser.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="cz.martinbayer.e4.analyser" id="cz.martinbayer.e4.analyser.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -12,7 +12,7 @@
    </launcherArgs>
 
    <windowImages/>
-   
+
    <plugins>
       <plugin id="com.ibm.icu"/>
       <plugin id="cz.martinbayer.analyser.logic"/>
@@ -137,6 +137,19 @@
       <plugin id="org.w3c.dom.smil"/>
       <plugin id="org.w3c.dom.svg"/>
    </plugins>
+
+   <features>
+      <feature id="org.eclipse.equinox.p2.core.feature" version="1.2.1.v20130827-1605"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature" version="1.0.100.v20130502-0334"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature" version="1.2.0.v20130827-1605"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature" version="1.2.0.v20140122-1840"/>
+      <feature id="org.eclipse.e4.rcp" version="1.2.2.v20140127-1012"/>
+      <feature id="org.eclipse.equinox.p2.sdk" version="3.8.1.v20140122-1840"/>
+      <feature id="org.eclipse.equinox.p2.user.ui" version="2.2.0.v20140122-1840"/>
+      <feature id="org.eclipse.test" version="3.6.0.v20130424-0442"/>
+   </features>
 
 
 </product>

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.log.ILoggerProvider;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -42,6 +43,9 @@ public class MainCanvas implements ICanvas {
 	private ScrolledComposite scrolledComposite;
 
 	@Inject
+	private ILoggerProvider provider;
+
+	@Inject
 	private MApplication application;
 	private CanvasMouseAdapter canvasMouseAdapter;
 
@@ -52,7 +56,6 @@ public class MainCanvas implements ICanvas {
 
 	@PostConstruct
 	public void postConstruct(Composite parent) {
-
 		parent.getShell().setLayout(new FillLayout());
 		parent.setLayout(new FillLayout());
 		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL
@@ -110,7 +113,7 @@ public class MainCanvas implements ICanvas {
 
 	@Inject
 	public void changeCursor(
-			@Optional @Named(ContextVariables.PALETTE_SELECTED_ITEM) PaletteItem item) {
+			@Optional @Named(ContextVariables.PALETTE_SELECTED_ITEM_KEY) PaletteItem item) {
 		if (scrolledComposite != null && !scrolledComposite.isDisposed()) {
 			if (item != null) {
 				Bundle bundle = FrameworkUtil.getBundle(this.getClass());

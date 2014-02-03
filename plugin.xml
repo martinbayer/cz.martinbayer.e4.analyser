@@ -15,6 +15,10 @@
                name="appName"
                value="cz.martinbayer.e4.analyser">
          </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.LifecycleManager">
+         </property>
       </product>
    </extension>
 
