@@ -26,6 +26,7 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 	/**
 	 * 
 	 */
+	public static final Point DEFAULT_SIZE = new Point(40, 40);
 	private static final long serialVersionUID = -2213613605192127483L;
 	private GridLayout itemLayout;
 	private Point imageSize;
@@ -40,7 +41,7 @@ public class CanvasItem extends Composite implements Serializable, ICanvasItem {
 
 	public CanvasItem(Composite parent, int style,
 			ProcessorPaletteItem selectedObject) {
-		this(parent, style, selectedObject, 40, 40);
+		this(parent, style, selectedObject, DEFAULT_SIZE.x, DEFAULT_SIZE.y);
 	}
 
 	public CanvasItem(Composite parent, int style,

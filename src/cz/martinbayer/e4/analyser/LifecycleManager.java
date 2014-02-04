@@ -25,7 +25,7 @@ public class LifecycleManager implements ContextVariables, ContextDefaultValues 
 			}
 		};
 		/* it can be gained via ILoggerProvider from application context */
-		context.set(ILoggerProvider.class.getName(), service);
+		context.set(ILoggerProvider.class, service);
 		/*
 		 * initialization of logger factory - logger can be gained via its
 		 * static method getInstance

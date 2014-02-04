@@ -5,6 +5,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import cz.martinbayer.analyser.processors.IProcessorLogic;
 import cz.martinbayer.analyser.processors.IProcessorsPaletteItem;
 import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
 
 /**
  * represents processor as node for the treeviewer
@@ -31,7 +32,7 @@ public class ProcessorPaletteItem implements SubPaletteItem {
 
 	@Override
 	public ImageDescriptor getImage() {
-		return item.getImageDescriptor();
+		return item.getImageDescriptor(CanvasItem.DEFAULT_SIZE.x, CanvasItem.DEFAULT_SIZE.x);
 	}
 
 	public IProcessorsPaletteItem getItem() {
