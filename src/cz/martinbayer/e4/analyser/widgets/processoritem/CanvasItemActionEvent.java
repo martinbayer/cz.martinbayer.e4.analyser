@@ -1,4 +1,4 @@
-package cz.martinbayer.e4.analyser.widgets.canvasitem;
+package cz.martinbayer.e4.analyser.widgets.processoritem;
 
 import java.util.EventObject;
 
@@ -13,7 +13,7 @@ public class CanvasItemActionEvent extends EventObject {
 	private Object data;
 	private TypedEvent originalEvent;
 
-	public CanvasItemActionEvent(ICanvasItem source, Object data,
+	public CanvasItemActionEvent(IProcessorItem source, Object data,
 			TypedEvent originalEvent) {
 		super(source);
 		this.data = data;
@@ -21,8 +21,8 @@ public class CanvasItemActionEvent extends EventObject {
 	}
 
 	@Override
-	public ICanvasItem getSource() {
-		return (ICanvasItem) super.getSource();
+	public IProcessorItem getSource() {
+		return (IProcessorItem) super.getSource();
 	}
 
 	public Object getData() {

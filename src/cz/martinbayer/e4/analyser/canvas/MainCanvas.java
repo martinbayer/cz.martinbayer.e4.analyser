@@ -1,14 +1,17 @@
 package cz.martinbayer.e4.analyser.canvas;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.services.log.ILoggerProvider;
-import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -16,7 +19,6 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
@@ -26,56 +28,48 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
+import cz.martinbayer.e4.analyser.LoggerFactory;
+import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
 import cz.martinbayer.e4.analyser.canvas.utils.CanvasItemsLocator;
 import cz.martinbayer.e4.analyser.palette.ConnectionPaletteItem;
 import cz.martinbayer.e4.analyser.palette.PaletteItem;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItemActionEvent;
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItemDnDData;
-import cz.martinbayer.e4.analyser.widgets.line.ILine;
-import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasItemDnDData;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 import cz.martinbayer.utils.ImageUtils;
 
-public class MainCanvas implements ICanvas {
+public class MainCanvas extends CanvasEventHandler {
 
-	private ArrayList<CanvasItem> canvasItems;
 	private ScrolledComposite scrolledComposite;
+	private Logger logger = LoggerFactory.getInstance(getClass());
 
-	@Inject
-	private ILoggerProvider provider;
-
-	@Inject
-	private MApplication application;
 	private CanvasMouseAdapter canvasMouseAdapter;
-
-	@Inject
-	public MainCanvas() {
-		canvasItems = new ArrayList<>();
-	}
+	private EMenuService menuService;
+	private Composite canvasInnerComposite;
 
 	@PostConstruct
-	public void postConstruct(Composite parent) {
-		parent.getShell().setLayout(new FillLayout());
-		parent.setLayout(new FillLayout());
-		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL
+	public void postConstruct(
+			Composite parent,
+			EMenuService menuService,
+			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager) {
+		super.postConstruct(canvasManager);
+		this.menuService = menuService;
+		Composite mainComp = new Composite(parent, SWT.NONE);
+		mainComp.setLayout(new FillLayout());
+		scrolledComposite = new ScrolledComposite(mainComp, SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER);
 
-		Composite child = new Composite(scrolledComposite, SWT.NONE);
+		canvasInnerComposite = new Composite(scrolledComposite, SWT.NONE);
 
-		child.setLayout(null);
-		initListeners(child);
-		initDnDTarget(child);
+		canvasInnerComposite.setLayout(null);
+		initListeners(canvasInnerComposite);
+		initDnDTarget(canvasInnerComposite);
 
-		scrolledComposite.setContent(child);
+		scrolledComposite.setContent(canvasInnerComposite);
 		scrolledComposite.setExpandVertical(true);
 		scrolledComposite.setExpandHorizontal(true);
-		scrolledComposite.setMinSize(child
-				.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	}
-
-	public void addItem(CanvasItem item) {
-		canvasItems.add(item);
+		scrolledComposite.setMinSize(canvasInnerComposite.computeSize(
+				SWT.DEFAULT, SWT.DEFAULT));
 	}
 
 	private void initDnDTarget(final Composite canvas) {
@@ -88,11 +82,12 @@ public class MainCanvas implements ICanvas {
 			public void drop(DropTargetEvent event) {
 				// get the selected item from the application context. Item is
 				// set to the context in CanvasMouseAdapter
-				CanvasItem selectedItem = (CanvasItem) application.getContext()
-						.get(CanvasMouseAdapter.SELECTED_CANVAS_ITEM);
+				CanvasProcessorItem selectedItem = (CanvasProcessorItem) ((CanvasEvent) application
+						.getContext().get(
+								ContextVariables.CANVAS_PROCESSOR_TAKEN))
+						.getItem();
 				if (selectedItem != null) {
 					DropTarget dt = (DropTarget) event.widget;
-					Point offset = selectedItem.getSelectionOffsetPoint();
 
 					Point movementPoint;
 					if (event.data instanceof CanvasItemDnDData) {
@@ -103,7 +98,8 @@ public class MainCanvas implements ICanvas {
 
 						selectedItem.move(newLocation.x - movementPoint.x,
 								newLocation.y - movementPoint.y);
-						CanvasItemsLocator.normalizeLocations(canvasItems);
+						CanvasItemsLocator.normalizeLocations(canvasManager
+								.getProcessors());
 					}
 				}
 			}
@@ -113,7 +109,7 @@ public class MainCanvas implements ICanvas {
 
 	@Inject
 	public void changeCursor(
-			@Optional @Named(ContextVariables.PALETTE_SELECTED_ITEM_KEY) PaletteItem item) {
+			@Optional @Named(ContextVariables.PALETTE_ITEM_SELECTED) PaletteItem item) {
 		if (scrolledComposite != null && !scrolledComposite.isDisposed()) {
 			if (item != null) {
 				Bundle bundle = FrameworkUtil.getBundle(this.getClass());
@@ -139,58 +135,38 @@ public class MainCanvas implements ICanvas {
 
 	private void initListeners(final Composite canvas) {
 		canvasMouseAdapter = new CanvasMouseAdapter(this, canvas,
-				this.scrolledComposite, application);
+				this.scrolledComposite, application, this.menuService);
 		canvas.addMouseListener(canvasMouseAdapter);
 
 	}
 
-	public ArrayList<CanvasItem> getItems() {
-		return this.canvasItems;
+	@Focus
+	public void setFocus() {
+		scrolledComposite.setFocus();
 	}
 
-	@Override
-	public void setSelectedItem(CanvasItemActionEvent e, boolean selected) {
-		if (selected) {
-			application.getContext().set(
-					CanvasMouseAdapter.SELECTED_CANVAS_ITEM, e.getSource());
-			canvasMouseAdapter.handleConnectionCreation((MouseEvent) e
-					.getOriginalEvent());
-		} else {
-			application.getContext().set(
-					CanvasMouseAdapter.SELECTED_CANVAS_ITEM, null);
-
+	@PreDestroy
+	void preDestroy(IEclipseContext context) {
+		Field[] fields = ContextVariables.class.getDeclaredFields();
+		for (Field f : fields) {
+			try {
+				Object val = f.get(null);
+				if (val instanceof String) {
+					context.set((String) val, null);
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				logger.warn("Error during context clean-up");
+			}
 		}
 	}
 
 	@Override
-	public CanvasItem getSelectedItem() {
-		CanvasItem selectedItem = (CanvasItem) application.getContext().get(
-				CanvasMouseAdapter.SELECTED_CANVAS_ITEM);
-		return selectedItem;
+	public Composite getInnerCanvasComposite() {
+		return this.canvasInnerComposite;
 	}
 
 	@Override
-	public void setSelectedConnection(ILine selectedConnection) {
-		application.getContext()
-				.set(CanvasMouseAdapter.SELECTED_CONNECTION_ITEM,
-						selectedConnection);
-	}
-
-	@Override
-	public ConnectionItem getSelectedConnection() {
-		ConnectionItem selectedItem = (ConnectionItem) application.getContext()
-				.get(CanvasMouseAdapter.SELECTED_CONNECTION_ITEM);
-		return selectedItem;
-	}
-
-	@Override
-	public void setVisitedItem(CanvasItem visitedItem) {
-		application.getContext().set(CanvasMouseAdapter.VISITED_CANVAS_ITEM,
-				visitedItem);
-	}
-
-	public CanvasItem getVisitedItem() {
-		return (CanvasItem) application.getContext().get(
-				CanvasMouseAdapter.VISITED_CANVAS_ITEM);
+	public ScrolledComposite getScrollingOuterCanvasComposite() {
+		return this.scrolledComposite;
 	}
 }

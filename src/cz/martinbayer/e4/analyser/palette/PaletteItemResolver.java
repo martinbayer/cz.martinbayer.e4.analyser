@@ -30,9 +30,7 @@ public class PaletteItemResolver {
 						ProcessorTypeResolver.getIcon(proc)));
 			}
 			RootPaletteItem actualRoot = roots.get(procTypeName);
-			ProcessorPaletteItem newItem = new ProcessorPaletteItem(
-					processor.getProcessorPaletteItem(),
-					processor.getProcessorLogic());
+			ProcessorPaletteItem newItem = new ProcessorPaletteItem(processor);
 			newItem.setParent(actualRoot);
 			actualRoot.addChild(newItem);
 		}

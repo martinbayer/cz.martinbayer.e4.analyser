@@ -1,6 +1,10 @@
 package cz.martinbayer.e4.analyser.canvas;
 
+import java.util.ArrayList;
+
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -17,105 +21,82 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import cz.martinbayer.analyser.processors.types.InputProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
-import cz.martinbayer.e4.analyser.palette.ConnectionPaletteItem;
+import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItemDnDData;
-import cz.martinbayer.e4.analyser.widgets.line.LinePart;
-import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
-import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasItemDnDData;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 
 public class CanvasMouseAdapter extends MouseAdapter {
 
-	public static final String SELECTED_CANVAS_ITEM = "selected_canvas_item";
-	public static final String SELECTED_CONNECTION_ITEM = "selected_connection_item";
-	public static final String VISITED_CANVAS_ITEM = "visited_canvas_item";
-
 	private Composite canvas;
 	private ScrolledComposite mainComposite;
-	private CanvasItem selectedItem;
 	private MApplication application;
 	private MainCanvas mainCanvas;
+	private EMenuService menuService;
 
 	public CanvasMouseAdapter(MainCanvas mainCanvas, Composite canvas,
-			ScrolledComposite mainComposite, MApplication application) {
+			ScrolledComposite mainComposite, MApplication application,
+			EMenuService menuService) {
 		this.mainCanvas = mainCanvas;
 		this.canvas = canvas;
 		this.mainComposite = mainComposite;
 		this.application = application;
+		this.menuService = menuService;
 	}
 
 	@Override
 	public void mouseDown(MouseEvent e) {
 		Object selectedPaletteItem = application.getContext().get(
-				ContextVariables.PALETTE_SELECTED_ITEM_KEY);
+				ContextVariables.PALETTE_ITEM_SELECTED);
+		Object hoveredCanvasItem = (application.getContext()
+				.get(ContextVariables.CANVAS_ITEM_HOVERED));
 		if (selectedPaletteItem instanceof ProcessorPaletteItem
-				&& ((ProcessorPaletteItem) selectedPaletteItem).getParent() != null) {
+				&& /*
+					 * don 't do any operations if root in the tree is selected
+					 */((ProcessorPaletteItem) selectedPaletteItem).getParent() != null) {
 			handleProcessorItemCreation(e,
-					(ProcessorPaletteItem) selectedPaletteItem);
-		} else {
-			handleConnectionCreation(e);
+					(ProcessorPaletteItem) selectedPaletteItem,
+					hoveredCanvasItem);
 		}
-
 	}
 
-	public void handleProcessorItemCreation(MouseEvent e,
-			ProcessorPaletteItem selectedPaletteItem) {
-		CanvasItem item = new CanvasItem(canvas, SWT.NONE, selectedPaletteItem);
-		item.setLocation(e.x, e.y);
-		item.addCanvasItemEventListener(new CanvasItemEventListener(mainCanvas));
-		item.pack();
-		initDnD(item);
-		mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		mainCanvas.addItem(item);
-		application.getContext().set(ContextVariables.PALETTE_SELECTED_ITEM_KEY,
-				null);
+	private void handleProcessorItemCreation(MouseEvent e,
+			ProcessorPaletteItem selectedPaletteItem, Object hoveredCanvasItem) {
+		if (hoveredCanvasItem == null) {
+			CanvasProcessorItem item = new CanvasProcessorItem(canvas,
+					SWT.NONE, selectedPaletteItem, menuService,
+					application.getContext());
+			item.setLocation(e.x, e.y);
+			item.pack();
+			initDnD(item);
+			mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
+					SWT.DEFAULT));
+			mainCanvas.addItem(item);
+			handleInputProcessor(item);
+		}
 	}
 
-	public void handleConnectionCreation(MouseEvent e) {
-		ConnectionItem connection = null;
-		CanvasItem selectedItem;
-		Object selectedPaletteItem = application.getContext().get(
-				ContextVariables.PALETTE_SELECTED_ITEM_KEY);
-		if (selectedPaletteItem instanceof ConnectionPaletteItem) {
-			if ((selectedItem = mainCanvas.getSelectedItem()) != null) {
-				int xCoord = selectedItem.getLocation().x + e.x;
-				int yCoord = selectedItem.getLocation().y + e.y;
-				if ((connection = (ConnectionItem) application.getContext()
-						.get(ConnectionItem.ACTIVE_CONNECTION)) == null) {
-					connection = new ConnectionItem(canvas, SWT.NONE);
-					// canvas is notified about the operations made over the
-					// line
-					connection
-							.addLineEventListener(new CanvasLineEventListener(
-									mainCanvas));
-					if (mainCanvas.getSelectedItem().addConnection(
-							new ItemConnectionConnector(connection,
-									selectedItem, LinePart.START_SPOT))) {
-						connection.setStartPoint(xCoord, yCoord,
-								selectedItem.getBounds());
-						application.getContext().set(
-								ConnectionItem.ACTIVE_CONNECTION, connection);
-					}
-				} else {
-					// do not allow to add the connection to the same item
-					if (mainCanvas.getVisitedItem().addConnection(
-							new ItemConnectionConnector(connection,
-									selectedItem, LinePart.END_SPOT))) {
-						connection.setEndPoint(xCoord, yCoord,
-								selectedItem.getBounds());
-						connection.pack();
-						mainComposite.setMinSize(canvas.computeSize(
-								SWT.DEFAULT, SWT.DEFAULT));
-						application.getContext().set(
-								ContextVariables.PALETTE_SELECTED_ITEM_KEY, null);
-						application.getContext().set(
-								ConnectionItem.ACTIVE_CONNECTION, null);
-					}
+	/**
+	 * If new input processor is added, then save it to the context. It will be
+	 * one of the starting points
+	 * 
+	 * @param item
+	 */
+	private void handleInputProcessor(final CanvasProcessorItem item) {
+		if (item.getItem().getLogic().getProcessor() instanceof InputProcessor) {
+			UISynchronize sync = application.getContext().get(
+					UISynchronize.class);
+			sync.asyncExec(new Runnable() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public void run() {
+					((ArrayList<CanvasProcessorItem>) application.getContext()
+							.get(ContextVariables.CANVAS_INPUT_ITEMS))
+							.add(item);
 				}
-				connection.moveAbove(null);
-			}
+			});
 		}
 	}
 
@@ -135,9 +116,9 @@ public class CanvasMouseAdapter extends MouseAdapter {
 						.getSource()).getControl();
 				// Creating new Image
 				Image image;
-				if (composite instanceof CanvasItem) {
-					image = ((CanvasItem) composite).getItem().getImage()
-							.createImage();
+				if (composite instanceof CanvasProcessorItem) {
+					image = ((CanvasProcessorItem) composite).getItem()
+							.getImage().createImage();
 				} else {
 					// Getting dimensions of this widget
 					Point compositeSize = composite.getSize();
@@ -150,16 +131,18 @@ public class CanvasMouseAdapter extends MouseAdapter {
 				}
 				// Setting widget to DnD image
 				event.image = image;
-				selectedItem = (CanvasItem) ((DragSource) event.getSource())
-						.getControl();
+				CanvasProcessorItem selectedItem = (CanvasProcessorItem) ((DragSource) event
+						.getSource()).getControl();
 				event.offsetX = event.x;
 				event.offsetY = event.y;
 				Point offsetPoint = new Point(event.offsetX, event.offsetY);
 				dragStartPoint = new Point(selectedItem.getLocation().x
 						+ event.x, selectedItem.getLocation().y + event.y);
 				selectedItem.setSelectionOffsetPoint(offsetPoint);
-				application.getContext()
-						.set(SELECTED_CANVAS_ITEM, selectedItem);
+				application.getContext().set(
+						ContextVariables.CANVAS_PROCESSOR_TAKEN,
+						new CanvasEvent<CanvasProcessorItem>(selectedItem,
+								event));
 			}
 
 			@Override
@@ -173,7 +156,6 @@ public class CanvasMouseAdapter extends MouseAdapter {
 			public void dragFinished(DragSourceEvent event) {
 				mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
 						SWT.DEFAULT));
-				selectedItem = null;
 				dragStartPoint = null;
 			}
 		});

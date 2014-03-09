@@ -1,104 +1,89 @@
 package cz.martinbayer.e4.analyser.widgets.line;
 
-import java.util.ArrayList;
-
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.events.TypedEvent;
+
+import cz.martinbayer.e4.analyser.ContextVariables;
+import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
+import cz.martinbayer.e4.analyser.canvas.event.LineEvent;
+import cz.martinbayer.e4.analyser.widgets.ICanvasItemEventListener;
 
 public class LineEventHandler implements MouseMoveListener, MouseListener,
-		MouseTrackListener {
+		MouseTrackListener, ICanvasItemEventListener {
 
 	private ILine line;
-	private ArrayList<ILineEventListener> listeners = new ArrayList<>();
+	private IEclipseContext ctx;
+	private IEventBroker broker;
 
-	public LineEventHandler(ILine line) {
+	public LineEventHandler(ILine line, IEclipseContext ctx) {
 		this.line = line;
+		this.ctx = ctx;
+		this.broker = ctx.get(IEventBroker.class);
 	}
 
 	@Override
 	public void mouseEnter(MouseEvent e) {
 		if (line.isStartSpotSelected(e.x, e.y)) {
-			line.setHighlighted(true, LinePart.START_SPOT);
+			broker.send(ContextVariables.CANVAS_ITEM_HOVERED,
+					new LineEvent<ILine>(line, e, LinePart.START_SPOT));
 		} else if (line.isEndSpotSelected(e.x, e.y)) {
-			line.setHighlighted(true, LinePart.END_SPOT);
+			broker.send(ContextVariables.CANVAS_ITEM_HOVERED,
+					new LineEvent<ILine>(line, e, LinePart.END_SPOT));
 		} else if (line.isLineSelected(e.x, e.y)) {
-			line.setHighlighted(true, LinePart.LINE);
+			broker.send(ContextVariables.CANVAS_ITEM_HOVERED,
+					new LineEvent<ILine>(line, e, LinePart.LINE));
 		}
 	}
 
 	@Override
 	public void mouseExit(MouseEvent e) {
-		line.setHighlighted(false, null);
+		broker.send(ContextVariables.CANVAS_ITEM_HOVERED, null);
 	}
 
 	@Override
 	public void mouseHover(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseDoubleClick(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseDown(MouseEvent e) {
 		if (line.isStartSpotSelected(e.x, e.y)) {
-			fireMouseDown(LineEventType.START_POINT_CLICKED, e);
+			this.broker.send(ContextVariables.CANVAS_CONNECTION_TAKEN,
+					new LineEvent<ILine>(line, e, LinePart.START_SPOT));
+			this.broker.send(ContextVariables.CANVAS_CONNECTION_SELECTED,
+					new LineEvent<ILine>(line, e, LinePart.START_SPOT));
 		} else if (line.isEndSpotSelected(e.x, e.y)) {
-			fireMouseDown(LineEventType.END_POINT_CLICKED, e);
+			this.broker.send(ContextVariables.CANVAS_CONNECTION_TAKEN,
+					new LineEvent<ILine>(line, e, LinePart.END_SPOT));
+			this.broker.send(ContextVariables.CANVAS_CONNECTION_SELECTED,
+					new LineEvent<ILine>(line, e, LinePart.END_SPOT));
 		} else if (line.isLineSelected(e.x, e.y)) {
-			fireMouseDown(LineEventType.LINE_CLICKED, e);
+			this.broker.send(ContextVariables.CANVAS_CONNECTION_TAKEN,
+					new LineEvent<ILine>(line, e, LinePart.LINE));
+			this.broker.send(ContextVariables.CANVAS_CONNECTION_SELECTED,
+					new LineEvent<ILine>(line, e, LinePart.LINE));
 		}
 	}
 
 	@Override
 	public void mouseUp(MouseEvent e) {
-		if (line.isStartSpotSelected(e.x, e.y)) {
-			fireMouseUp(LineEventType.START_POINT_RELEASED, e);
-		} else if (line.isEndSpotSelected(e.x, e.y)) {
-			fireMouseUp(LineEventType.END_POINT_RELEASED, e);
-		} else if (line.isLineSelected(e.x, e.y)) {
-			fireMouseUp(LineEventType.LINE_RELEASED, e);
-		}
+		this.broker.send(ContextVariables.CANVAS_CONNECTION_TAKEN, null);
 	}
 
 	@Override
 	public void mouseMove(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
-	private void fireMouseDown(LineEventType eventType, TypedEvent originalEvent) {
-		LineActionEvent event = new LineActionEvent(this.line, eventType,
-				originalEvent, null);
-		for (ILineEventListener l : listeners) {
-			l.handleMouseDown(event);
-		}
-	}
-
-	private void fireMouseUp(LineEventType eventType, TypedEvent originalEvent) {
-		LineActionEvent event = new LineActionEvent(this.line, eventType,
-				originalEvent, null);
-		for (ILineEventListener l : listeners) {
-			l.handleMouseUp(event);
-		}
-	}
-
-	public void addListener(ILineEventListener listener) {
-		if (!listeners.contains(listener)) {
-			listeners.add(listener);
-		}
-	}
-
-	public void removeListener(ILineEventListener listener) {
-		if (listeners.contains(listener)) {
-			listeners.remove(listener);
-		}
+	@Override
+	public void itemDisposed() {
+		this.broker.send(ContextVariables.CANVAS_DISPOSED_ITEM,
+				new CanvasEvent<ILine>(line, null));
 	}
 }

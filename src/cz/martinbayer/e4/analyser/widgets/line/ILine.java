@@ -2,7 +2,9 @@ package cz.martinbayer.e4.analyser.widgets.line;
 
 import org.eclipse.swt.graphics.Rectangle;
 
-public interface ILine {
+import cz.martinbayer.e4.analyser.widgets.ICanvasItem;
+
+public interface ILine extends ICanvasItem {
 
 	/**
 	 * Implementation arranges each part of the line to be highlighted if
@@ -15,15 +17,17 @@ public interface ILine {
 	 */
 	void setHighlighted(boolean highlighted, LinePart part);
 
+	/**
+	 * Line is selected if parameter "selected" = True, otherwise Line is
+	 * unselected
+	 */
+	void setSelected(boolean selected);
+
 	boolean isStartSpotSelected(int x, int y);
 
 	boolean isEndSpotSelected(int x, int y);
 
 	boolean isLineSelected(int x, int y);
-
-	void addLineEventListener(ILineEventListener listener);
-
-	void removeLineEventListener(ILineEventListener listener);
 
 	void setStartPoint(int x, int y);
 

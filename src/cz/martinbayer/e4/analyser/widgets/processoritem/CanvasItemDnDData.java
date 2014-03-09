@@ -1,4 +1,4 @@
-package cz.martinbayer.e4.analyser.widgets.canvasitem;
+package cz.martinbayer.e4.analyser.widgets.processoritem;
 
 import java.io.Serializable;
 

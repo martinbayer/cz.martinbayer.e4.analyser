@@ -10,7 +10,7 @@ import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TransferData;
 
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItemDnDData;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasItemDnDData;
 
 /**
  * transfer type used only to support DnD on canvas - items are just relocated

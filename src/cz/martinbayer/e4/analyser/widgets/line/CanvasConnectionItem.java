@@ -3,8 +3,10 @@ package cz.martinbayer.e4.analyser.widgets.line;
 import java.awt.Polygon;
 import java.awt.geom.Line2D;
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -18,7 +20,8 @@ import org.eclipse.swt.widgets.Composite;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
 import cz.martinbayer.e4.analyser.widgets.SWTUtils;
 
-public class Line extends Composite implements Serializable, ILine {
+public class CanvasConnectionItem extends Composite implements Serializable,
+		ILine {
 
 	/**
 	 * 
@@ -35,9 +38,21 @@ public class Line extends Composite implements Serializable, ILine {
 	 */
 	private final int DEFAULT_WIDTH = 4;
 
-	private Color actLineColor, lineColor, lineHoverColor, actStartPointColor,
-			startPointColor, startPointHoverColor, actEndPointColor,
-			endPointColor, endPointHoverColor;
+	/* actually selected color definitions */
+	private Color actLineColor, actStartPointColor, actEndPointColor;
+
+	/* default constant color definitions */
+	private final Color LINE_DEFAULT_COLOR, START_POINT_DEFAULT_COLOR,
+			END_POINT_DEFAULT_COLOR;
+
+	/* Color definitions for hover operation */
+	private Color lineHoverColor, startPointHoverColor, endPointHoverColor;
+
+	/* Color definitions for hover operation */
+	private Color lineSelectedColor = ColorUtils.getColor(SWT.COLOR_BLACK),
+			startPointSelectedColor = ColorUtils.getColor(SWT.COLOR_BLACK),
+			endPointSelectedColor = ColorUtils.getColor(SWT.COLOR_BLACK);
+
 	/**
 	 * points where the mouse is pressed - it is placed on both ends in the
 	 * middle of the line. It must be recalculated to the coordinates of the
@@ -83,55 +98,80 @@ public class Line extends Composite implements Serializable, ILine {
 
 	private Rectangle endAreaRect;
 
+	private Color redColor;
+
+	private MApplication application;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param parent
-	 *            - component which will contain the {@link Line}
+	 *            - component which will contain the
+	 *            {@link CanvasConnectionItem}
 	 * @param style
 	 *            - component is always set as SWT.TRANSPARENT but additional
 	 *            styles can be added by this parameter
 	 */
-	public Line(Composite parent, int style) {
+	public CanvasConnectionItem(Composite parent, int style,
+			MApplication application) {
 		super(parent, style | SWT.TRANSPARENT);
+		this.application = application;
 		initListeners();
 		setCursor(new Cursor(null, SWT.CURSOR_HAND));
-		actLineColor = lineColor = ColorUtils.getColor(SWT.COLOR_BLACK);
+		actLineColor = LINE_DEFAULT_COLOR = ColorUtils
+				.getColor(SWT.COLOR_BLACK);
 		lineHoverColor = ColorUtils.getColor(SWT.COLOR_GRAY);
-		actStartPointColor = startPointColor = ColorUtils
+		actStartPointColor = START_POINT_DEFAULT_COLOR = ColorUtils
 				.getColor(SWT.COLOR_BLACK);
 		startPointHoverColor = ColorUtils.getColor(SWT.COLOR_YELLOW);
-		actEndPointColor = endPointColor = ColorUtils.getColor(SWT.COLOR_BLACK);
+		actEndPointColor = END_POINT_DEFAULT_COLOR = ColorUtils
+				.getColor(SWT.COLOR_BLACK);
 		endPointHoverColor = ColorUtils.getColor(SWT.COLOR_YELLOW);
+		redColor = ColorUtils.getColor(SWT.COLOR_RED);
+	}
+
+	@Override
+	public void setSelected(boolean selected) {
+		if (!selected) {
+			actLineColor = LINE_DEFAULT_COLOR;
+			actStartPointColor = START_POINT_DEFAULT_COLOR;
+			actEndPointColor = END_POINT_DEFAULT_COLOR;
+		} else {
+			actLineColor = lineSelectedColor;
+			actStartPointColor = startPointSelectedColor;
+			actEndPointColor = endPointSelectedColor;
+		}
+		redraw();
+
 	}
 
 	@Override
 	public void setHighlighted(boolean highlighted, LinePart part) {
 		if (part == null) {
-			actLineColor = lineColor;
-			actStartPointColor = startPointColor;
-			actEndPointColor = endPointColor;
+			actLineColor = LINE_DEFAULT_COLOR;
+			actStartPointColor = START_POINT_DEFAULT_COLOR;
+			actEndPointColor = END_POINT_DEFAULT_COLOR;
 		} else {
 			switch (part) {
 			case LINE:
 				if (highlighted) {
 					actLineColor = lineHoverColor;
 				} else {
-					actLineColor = lineColor;
+					actLineColor = LINE_DEFAULT_COLOR;
 				}
 				break;
 			case START_SPOT:
 				if (highlighted) {
 					actStartPointColor = startPointHoverColor;
 				} else {
-					actStartPointColor = startPointColor;
+					actStartPointColor = START_POINT_DEFAULT_COLOR;
 				}
 				break;
 			case END_SPOT:
 				if (highlighted) {
 					actEndPointColor = endPointHoverColor;
 				} else {
-					actEndPointColor = endPointColor;
+					actEndPointColor = END_POINT_DEFAULT_COLOR;
 				}
 				break;
 			}
@@ -159,9 +199,14 @@ public class Line extends Composite implements Serializable, ILine {
 				e.gc.fillOval(localEndPoint.x + offsetX - DEFAULT_WIDTH,
 						localEndPoint.y + offsetY - DEFAULT_WIDTH,
 						2 * DEFAULT_WIDTH, 2 * DEFAULT_WIDTH);
+				e.gc.setLineWidth(2);
+				e.gc.setForeground(redColor);
+				e.gc.drawOval(localEndPoint.x + offsetX - DEFAULT_WIDTH,
+						localEndPoint.y + offsetY - DEFAULT_WIDTH,
+						2 * DEFAULT_WIDTH, 2 * DEFAULT_WIDTH);
 			}
 		});
-		lineHandler = new LineEventHandler(this);
+		lineHandler = new LineEventHandler(this, application.getContext());
 		addMouseListener(lineHandler);
 		addMouseMoveListener(lineHandler);
 		addMouseTrackListener(lineHandler);
@@ -296,7 +341,6 @@ public class Line extends Composite implements Serializable, ILine {
 	public void setStartPoint(int x, int y, Rectangle startAreaRect) {
 		this.startPoint = new Point(x, y);
 		this.startAreaRect = startAreaRect;
-		System.out.println("new start point:" + this.startPoint);
 		fixLocalPoints();
 	}
 
@@ -309,7 +353,6 @@ public class Line extends Composite implements Serializable, ILine {
 	public void setEndPoint(int x, int y, Rectangle endAreaRect) {
 		this.endPoint = new Point(x, y);
 		this.endAreaRect = endAreaRect;
-		System.out.println("new end point:" + this.endPoint);
 		fixLocalPoints();
 	}
 
@@ -338,7 +381,8 @@ public class Line extends Composite implements Serializable, ILine {
 		} else {
 			this.localEndPoint = new Point(0, 0);
 		}
-		setLocation(Line.countLocation(Line.this));
+		setLocation(CanvasConnectionItem
+				.countLocation(CanvasConnectionItem.this));
 		pack();
 	}
 
@@ -439,7 +483,7 @@ public class Line extends Composite implements Serializable, ILine {
 		return new Point(-1, -1);
 	}
 
-	public static Point countLocation(Line line) {
+	public static Point countLocation(CanvasConnectionItem line) {
 		return countLocation(line.startPoint, line.endPoint, line.offsetX,
 				line.offsetY);
 	}
@@ -478,12 +522,51 @@ public class Line extends Composite implements Serializable, ILine {
 	}
 
 	@Override
-	public void addLineEventListener(ILineEventListener listener) {
-		this.lineHandler.addListener(listener);
+	public void itemTaken(Object param) {
+		// setHighlighted(true, (LinePart) param);
 	}
 
 	@Override
-	public void removeLineEventListener(ILineEventListener listener) {
-		this.lineHandler.removeListener(listener);
+	public void itemUntaken(Object param) {
+		// setHighlighted(false, null);
+	}
+
+	@Override
+	public void itemHovered(Object param) {
+		if (param != null) {
+			setHighlighted(true, (LinePart) param);
+		} else {
+			setHighlighted(false, null);
+		}
+	}
+
+	@Override
+	public void itemSelected(Object param) {
+		setSelected(true);
+	}
+
+	@Override
+	public void itemUnselected(Object param) {
+		setSelected(false);
+	}
+
+	@Override
+	public void setSelected(boolean selected, Object param) {
+		if (param == null || param instanceof LinePart) {
+			if (selected) {
+				itemSelected(param);
+			} else {
+				itemUnselected(param);
+			}
+		} else {
+			throw new InvalidParameterException(
+					"Parameter of type LinePart expected");
+		}
+	}
+
+	@Override
+	public void dispose() {
+		lineHandler.itemDisposed();
+		super.dispose();
 	}
 }

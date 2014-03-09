@@ -2,10 +2,11 @@ package cz.martinbayer.e4.analyser.palette;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
+import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
 import cz.martinbayer.analyser.processors.IProcessorLogic;
 import cz.martinbayer.analyser.processors.IProcessorsPaletteItem;
 import cz.martinbayer.analyser.processors.model.IXMLog;
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 
 /**
  * represents processor as node for the treeviewer
@@ -18,11 +19,12 @@ public class ProcessorPaletteItem implements SubPaletteItem {
 	private IProcessorsPaletteItem item;
 	private IProcessorLogic<IXMLog> logic;
 	private RootPaletteItem parent;
+	private IProcessorItemWrapper<IXMLog> itemWrapper;
 
-	public ProcessorPaletteItem(IProcessorsPaletteItem item,
-			IProcessorLogic<IXMLog> logic) {
-		this.item = item;
-		this.logic = logic;
+	public ProcessorPaletteItem(IProcessorItemWrapper<IXMLog> itemWrapper) {
+		this.itemWrapper = itemWrapper;
+		this.item = itemWrapper.getProcessorPaletteItem();
+		this.logic = itemWrapper.getProcessorLogic();
 	}
 
 	@Override
@@ -32,7 +34,8 @@ public class ProcessorPaletteItem implements SubPaletteItem {
 
 	@Override
 	public ImageDescriptor getImage() {
-		return item.getImageDescriptor(CanvasItem.DEFAULT_SIZE.x, CanvasItem.DEFAULT_SIZE.x);
+		return item.getImageDescriptor(CanvasProcessorItem.DEFAULT_SIZE.x,
+				CanvasProcessorItem.DEFAULT_SIZE.x);
 	}
 
 	public IProcessorsPaletteItem getItem() {
@@ -59,4 +62,9 @@ public class ProcessorPaletteItem implements SubPaletteItem {
 	public RootPaletteItem getParent() {
 		return parent;
 	}
+
+	public IProcessorItemWrapper<IXMLog> getItemWrapper() {
+		return itemWrapper;
+	}
+
 }

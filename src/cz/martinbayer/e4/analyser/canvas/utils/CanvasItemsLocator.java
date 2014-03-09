@@ -6,7 +6,8 @@ import java.util.List;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-import cz.martinbayer.e4.analyser.widgets.canvasitem.CanvasItem;
+import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
+import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 
 /**
  * Contains logarithms to place the items to be always at least VALUEpx apart
@@ -23,12 +24,12 @@ public class CanvasItemsLocator {
 
 	private static final int MIN_DISTANCE = 10;
 
-	public static boolean isItemOverlapping(List<CanvasItem> items, int x,
-			int y, int width, int height) {
+	public static boolean isItemOverlapping(List<CanvasProcessorItem> items,
+			int x, int y, int width, int height) {
 		Rectangle newItemBounds = new Rectangle(x - MIN_DISTANCE, y
 				- MIN_DISTANCE, width + 2 * MIN_DISTANCE, height + 2
 				* MIN_DISTANCE);
-		for (CanvasItem item : items) {
+		for (CanvasProcessorItem item : items) {
 			if (item.getBounds().intersects(newItemBounds)) {
 				return true;
 			}
@@ -36,11 +37,11 @@ public class CanvasItemsLocator {
 		return false;
 	}
 
-	public static List<CanvasItem> getItemsOverlapping(List<CanvasItem> items,
-			int x, int y, int width, int height) {
-		List<CanvasItem> overlappingItems = new ArrayList<>();
+	public static List<CanvasProcessorItem> getItemsOverlapping(
+			List<CanvasProcessorItem> items, int x, int y, int width, int height) {
+		List<CanvasProcessorItem> overlappingItems = new ArrayList<>();
 		Rectangle newItemBounds = getExtendedItemBounds(x, y, width, height);
-		for (CanvasItem item : items) {
+		for (CanvasProcessorItem item : items) {
 			if (item.getBounds().intersects(newItemBounds)) {
 				overlappingItems.add(item);
 			}
@@ -59,15 +60,15 @@ public class CanvasItemsLocator {
 	/**
 	 * Relocates all items to be placed minimally on (x=0,y=0)
 	 * 
-	 * @param items
+	 * @param list
 	 */
-	public static void normalizeLocations(List<CanvasItem> items) {
+	public static void normalizeLocations(List<IProcessorItem> list) {
 		int minX = 0;
 		int minY = 0;
 		int actItemX, actItemY;
-		for (CanvasItem item : items) {
-			actItemX = item.getLocation().x;
-			actItemY = item.getLocation().y;
+		for (IProcessorItem item : list) {
+			actItemX = ((CanvasProcessorItem) item).getLocation().x;
+			actItemY = ((CanvasProcessorItem) item).getLocation().y;
 			if (actItemX < minX) {
 				minX = actItemX;
 			}
@@ -78,21 +79,21 @@ public class CanvasItemsLocator {
 		if (minX < 0 || minY < 0) {
 			int moveX = Math.abs(minX);
 			int moveY = Math.abs(minY);
-			for (CanvasItem item : items) {
-				item.move(moveX, moveY);
+			for (IProcessorItem item : list) {
+				((CanvasProcessorItem) item).move(moveX, moveY);
 			}
 		}
 	}
 
 	/** TODO - will be implemented in case there is enough time */
 	public static Point fixDistances(Point actItemNewPosition,
-			CanvasItem actItem, List<CanvasItem> items) {
+			CanvasProcessorItem actItem, List<CanvasProcessorItem> items) {
 		int x = actItemNewPosition.x;
 		int y = actItemNewPosition.y;
 		int width = actItem.getBounds().width;
 		int height = actItem.getBounds().height;
 		// items without actualItem
-		List<CanvasItem> workingItems = new ArrayList<>(items);
+		List<CanvasProcessorItem> workingItems = new ArrayList<>(items);
 		workingItems.remove(actItem);
 		if (!isItemOverlapping(workingItems, x, y, width, height)) {
 			return new Point(x, y);

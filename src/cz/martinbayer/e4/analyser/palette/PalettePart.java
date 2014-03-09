@@ -11,10 +11,10 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
 import cz.martinbayer.analyser.processors.model.IXMLog;
@@ -31,12 +31,12 @@ public class PalettePart {
 
 	public static final String ID = "cz.martinbayer.e4.analyser.palette.PalettePart";
 
-	Label l;
-
 	private TreeViewer viewer;
 
 	@PostConstruct
-	public void postConstruct(Composite parent, MApplication application) {
+	public void postConstruct(Composite parent, MApplication application,
+			EMenuService menuService) {
+
 		logger.debug("initialized");
 		viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL
 				| SWT.V_SCROLL);
@@ -49,9 +49,6 @@ public class PalettePart {
 				.getInstance().getProcessors();
 		initProcessorsContext(procs, application);
 
-		for (IProcessorItemWrapper<IXMLog> p : procs) {
-			p.getProcessorLogic().getProcessor().run();
-		}
 		List<RootPaletteItem> roots = PaletteItemResolver
 				.resolveProcessors(ProcessorsPool.getInstance().getProcessors());
 
@@ -96,6 +93,6 @@ public class PalettePart {
 
 	@Focus
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		viewer.getTree().setFocus();
 	}
 }

@@ -42,6 +42,10 @@ public class ProcessorTypeResolver {
 		if (p instanceof OutputProcessor) {
 			return ProcessorType.OUTPUT_PROCESSOR;
 		}
+
+		if (p instanceof LogProcessor<?>) {
+			return ProcessorType.LOG_PROCESSOR;
+		}
 		return null;
 	}
 

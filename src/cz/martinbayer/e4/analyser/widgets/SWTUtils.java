@@ -1,8 +1,15 @@
 package cz.martinbayer.e4.analyser.widgets;
 
 import java.awt.Polygon;
+import java.net.URL;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 public class SWTUtils {
 
@@ -25,4 +32,19 @@ public class SWTUtils {
 		return polygon.contains(xCoord, yCoord);
 	}
 
+	public static Image getImage(String imageName) {
+		Bundle bundle = FrameworkUtil.getBundle(SWTUtils.class);
+		URL url = FileLocator
+				.find(bundle, new Path("icons/" + imageName), null);
+		ImageDescriptor image = ImageDescriptor.createFromURL(url);
+		return image.createImage();
+	}
+
+	public static Image getImage(String imageName, Class<?> clazz) {
+		Bundle bundle = FrameworkUtil.getBundle(clazz);
+		URL url = FileLocator
+				.find(bundle, new Path("icons/" + imageName), null);
+		ImageDescriptor image = ImageDescriptor.createFromURL(url);
+		return image.createImage();
+	}
 }

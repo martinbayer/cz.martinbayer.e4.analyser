@@ -1,28 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmi:id="_AslsYGo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ide.application" bindingContexts="_AslsaWo2EeOdoIxfdkOPNA">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_AslsYWo2EeOdoIxfdkOPNA" label="cz.martinbayer.e4.analyser" width="500" height="400">
-    <children xsi:type="advanced:PerspectiveStack" xmi:id="_DdqdIGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.perspectivestack.0">
-      <children xsi:type="advanced:Perspective" xmi:id="_D-ddEGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.perspective.0">
-        <children xsi:type="basic:PartSashContainer" xmi:id="_kgEuIGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.partsashcontainer.0" horizontal="true">
-          <children xsi:type="basic:PartStack" xmi:id="_myVEoGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.partstack.0" containerData="20">
-            <children xsi:type="basic:Part" xmi:id="_nHmxEGpHEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.palette.PalettePart" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.palette.PalettePart" label="Palette" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/palette.png"/>
-          </children>
-          <children xsi:type="basic:PartStack" xmi:id="_No6TsGpIEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.partstack.1" containerData="80">
-            <children xsi:type="basic:Part" xmi:id="_AYAeUGpIEeOdoIxfdkOPNA" elementId="cz.martinbayer.e4.analyser.part.1" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.MainCanvas" label="Canvas"/>
-          </children>
+<?xml version="1.0" encoding="ASCII"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_tgspoKI4EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.application">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_wVHSAKI4EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.trimmedwindow.0">
+    <children xsi:type="basic:PartSashContainer" xmi:id="_WJYvgKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.partsashcontainer.0" horizontal="true">
+      <children xsi:type="basic:PartStack" xmi:id="_Y10gkKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.partstack.0" containerData="20">
+        <children xsi:type="basic:Part" xmi:id="_a1J7EKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.part.0" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.palette.PalettePart" label="Palette" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/palette.png"/>
+      </children>
+      <children xsi:type="basic:PartStack" xmi:id="_ZixGIKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.partstack.1" containerData="80">
+        <children xsi:type="basic:Part" xmi:id="_eMb_8KI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.part.1" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.MainCanvas" label="Canvas" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/canvas.png">
+          <handlers xmi:id="_8KWlQKPmEeOQsrsMDFxKhw" elementId="cz.martinbayer.e4.analyser.handler.canvasitem.delete" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.widgets.processoritem.actions.Delete" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+          <menus xsi:type="menu:PopupMenu" xmi:id="_WT7tUKPTEeOQsrsMDFxKhw" elementId="cz_martinbayer_e4_analyser_processor_popup_menu" label="">
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_d-9zcKZREeOuhonBQyr_Wg" elementId="cz_martinbayer_e4_analyser_processor_popup_menu.remove" label="Remove" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/remove.png" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+          </menus>
         </children>
       </children>
     </children>
+    <mainMenu xmi:id="_l_W34KMkEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.menu.0"/>
+    <trimBars xmi:id="_k2S3o6ZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.trimbar.0">
+      <children xsi:type="menu:ToolBar" xmi:id="_l3a9cKZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.toolbar.0">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_mbfT0KZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.handledtoolitem.0" label="hhh" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+      </children>
+    </trimBars>
+    <trimBars xmi:id="_g5k9QKa7EeOTr5J_oebfHw" elementId="cz.martinbayer.e4.analyser.trimbar.bottom" side="Bottom">
+      <children xsi:type="menu:ToolControl" xmi:id="_ysXjQKbYEeOJPM8fi6Ty5A" elementId="cz.martinbayer.e4.analyser.toolcontrol.1" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.statusbar.StatusBar"/>
+    </trimBars>
   </children>
-  <rootContext xmi:id="_AslsaWo2EeOdoIxfdkOPNA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
-    <children xmi:id="_Aslsamo2EeOdoIxfdkOPNA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
-    <children xmi:id="_Aslsa2o2EeOdoIxfdkOPNA" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  <handlers xmi:id="_P8thAKZOEeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.handler.canvasitem.delete" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.widgets.processoritem.actions.Delete" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+  <bindingTables xmi:id="_z-9boKI6EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.bindingtable.dialogAndWindow" bindingContext="_a3mgMKI7EeOZB_p0_meNYQ">
+    <bindings xmi:id="_z94AQKJrEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.keybinding.delete" keySequence="M1+R" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+  </bindingTables>
+  <rootContext xmi:id="_a3mgMKI7EeOZB_p0_meNYQ" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_45m7QKI7EeOZB_p0_meNYQ" elementId="org.eclipse.ui.contexts.windows" name="In Windows"/>
+    <children xmi:id="_1gki4KI7EeOZB_p0_meNYQ" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
-  <addons xmi:id="_AslsYmo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
-  <addons xmi:id="_AslsY2o2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
-  <addons xmi:id="_AslsZGo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
-  <addons xmi:id="_AslsZWo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
-  <addons xmi:id="_AslsZmo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
-  <addons xmi:id="_AslsZ2o2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
-  <addons xmi:id="_AslsaGo2EeOdoIxfdkOPNA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+  <commands xmi:id="_zB-EcKPmEeOQsrsMDFxKhw" elementId="cz.martinbayer.e4.analyser.command.canvasitem.delete" commandName="Delete processor" description="Deletes selected processor"/>
+  <addons xmi:id="_tgspoaI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_tgspoqI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_tgspo6I4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_tgsppKI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_tgspp6I4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_tgsppaI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_tgsppqI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
 </application:Application>
