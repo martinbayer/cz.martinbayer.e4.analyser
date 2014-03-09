@@ -7,6 +7,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -17,6 +18,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Composite;
 
+import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
 import cz.martinbayer.e4.analyser.widgets.SWTUtils;
 
@@ -113,9 +115,10 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	 *            styles can be added by this parameter
 	 */
 	public CanvasConnectionItem(Composite parent, int style,
-			MApplication application) {
+			MApplication application, EMenuService menuService) {
 		super(parent, style | SWT.TRANSPARENT);
 		this.application = application;
+		initPopupMenu(menuService);
 		initListeners();
 		setCursor(new Cursor(null, SWT.CURSOR_HAND));
 		actLineColor = LINE_DEFAULT_COLOR = ColorUtils
@@ -128,6 +131,11 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 				.getColor(SWT.COLOR_BLACK);
 		endPointHoverColor = ColorUtils.getColor(SWT.COLOR_YELLOW);
 		redColor = ColorUtils.getColor(SWT.COLOR_RED);
+	}
+
+	private void initPopupMenu(EMenuService menuService) {
+		menuService.registerContextMenu(this,
+				ContextVariables.ITEM_POPUP_MENU_ID);
 	}
 
 	@Override
@@ -565,8 +573,9 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	}
 
 	@Override
-	public void dispose() {
+	public boolean remove() {
+		setVisible(false);
 		lineHandler.itemDisposed();
-		super.dispose();
+		return true;
 	}
 }

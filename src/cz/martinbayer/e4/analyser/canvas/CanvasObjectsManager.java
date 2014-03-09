@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.e4.core.services.log.Logger;
 
+import cz.martinbayer.analyser.processors.types.InputProcessor;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
 import cz.martinbayer.e4.analyser.canvas.event.LineEvent;
@@ -117,4 +118,14 @@ public class CanvasObjectsManager implements ICanvasManager {
 		return false;
 	}
 
+	@Override
+	public List<IProcessorItem> getInputProcessors() {
+		List<IProcessorItem> result = new ArrayList<>();
+		for (IProcessorItem item : processors) {
+			if (item.getItem().getLogic().getProcessor() instanceof InputProcessor) {
+				result.add(item);
+			}
+		}
+		return result;
+	}
 }

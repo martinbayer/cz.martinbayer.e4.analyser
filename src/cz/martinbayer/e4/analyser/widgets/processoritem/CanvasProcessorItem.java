@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.Messages;
+import cz.martinbayer.e4.analyser.canvas.utils.CanvasConnectorUtils;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
 import cz.martinbayer.e4.analyser.widgets.line.LinePart;
@@ -186,14 +187,22 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	}
 
 	private boolean connectionContained(ItemConnectionConnector connector) {
+		if (connector.getConnection().getSourceItem() == null) {
+			// it doesn't make sense to check the connections if there is no
+			// item specified for actually created connection
+			return false;
+		}
 		for (ItemConnectionConnector conn : this.connectors) {
-			ConnectionItem tempConnection = connector.getConnection();
-			if (tempConnection.getSourceItem() == null) {
-				tempConnection.setSourceItem(connector.getItem());
-			} else {
-				tempConnection.setDestinationItem(connector.getItem());
-			}
-			if (conn.getConnection().equals(tempConnection)) {
+			CanvasProcessorItem source1 = conn.getConnection().getSourceItem();
+			CanvasProcessorItem destination1 = conn.getConnection()
+					.getDestinationItem();
+			CanvasProcessorItem source2 = connector.getConnection()
+					.getSourceItem();
+			CanvasProcessorItem destination2 = connector.getItem();
+
+			// check that same processors are not already connected
+			if (CanvasConnectorUtils.areConnectionsSame(source1, destination1,
+					source2, destination2)) {
 				return true;
 			}
 		}
@@ -266,24 +275,6 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		}
 	}
 
-	@Override
-	public void dispose() {
-		/* dispose all connections which are connected to the processor too */
-		disposeConnections();
-		eventHandler.itemDisposed();
-		super.dispose();
-	}
-
-	private void disposeConnections() {
-		for (ItemConnectionConnector connector : this.connectors) {
-			/* remove source destination's connector reference */
-			connector.getConnection().removeItemsRefs(connector, this);
-			connector.getConnection().dispose();
-		}
-		this.connectors.clear();
-		this.connectors = null;
-	}
-
 	public boolean removeConnector(ConnectionItem connectionItem) {
 		int i = -1;
 		for (i = 0; i < this.connectors.size(); i++) {
@@ -299,4 +290,23 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		}
 		return false;
 	}
+
+	@Override
+	public boolean remove() {
+		removeConnections();
+		setVisible(false);
+		eventHandler.itemDisposed();
+		return true;
+	}
+
+	private void removeConnections() {
+		for (ItemConnectionConnector connector : this.connectors) {
+			/* remove source destination's connector reference */
+			connector.getConnection().removeItemsRefs(connector, this);
+			connector.getConnection().remove();
+		}
+		this.connectors.clear();
+		this.connectors = null;
+	}
+
 }

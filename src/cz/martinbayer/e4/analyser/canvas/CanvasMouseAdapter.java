@@ -1,8 +1,5 @@
 package cz.martinbayer.e4.analyser.canvas;
 
-import java.util.ArrayList;
-
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.swt.SWT;
@@ -21,7 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
-import cz.martinbayer.analyser.processors.types.InputProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
@@ -74,29 +70,6 @@ public class CanvasMouseAdapter extends MouseAdapter {
 			mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
 					SWT.DEFAULT));
 			mainCanvas.addItem(item);
-			handleInputProcessor(item);
-		}
-	}
-
-	/**
-	 * If new input processor is added, then save it to the context. It will be
-	 * one of the starting points
-	 * 
-	 * @param item
-	 */
-	private void handleInputProcessor(final CanvasProcessorItem item) {
-		if (item.getItem().getLogic().getProcessor() instanceof InputProcessor) {
-			UISynchronize sync = application.getContext().get(
-					UISynchronize.class);
-			sync.asyncExec(new Runnable() {
-				@SuppressWarnings("unchecked")
-				@Override
-				public void run() {
-					((ArrayList<CanvasProcessorItem>) application.getContext()
-							.get(ContextVariables.CANVAS_INPUT_ITEMS))
-							.add(item);
-				}
-			});
 		}
 	}
 

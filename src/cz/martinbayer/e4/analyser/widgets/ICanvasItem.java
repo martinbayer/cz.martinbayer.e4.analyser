@@ -14,5 +14,5 @@ public interface ICanvasItem {
 
 	void setSelected(boolean selected, Object param);
 
-	boolean isDisposed();
+	boolean remove();
 }

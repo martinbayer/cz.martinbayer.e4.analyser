@@ -28,4 +28,6 @@ public interface ICanvasManager {
 	boolean removeProcessor(IProcessorItem processor);
 
 	void hoverItem(CanvasEvent<ICanvasItem> event);
+
+	List<IProcessorItem> getInputProcessors();
 }

@@ -1,7 +1,5 @@
 package cz.martinbayer.e4.analyser;
 
-import java.util.ArrayList;
-
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.ILoggerProvider;
@@ -12,7 +10,6 @@ import cz.martinbayer.e4.analyser.canvas.CanvasObjectsManager;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
 import cz.martinbayer.e4.analyser.log.SLF4JLoggerWrapper;
 import cz.martinbayer.e4.analyser.statusbar.StatusHandler;
-import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 
 public class LifecycleManager implements ContextVariables, ContextDefaultValues {
 
@@ -57,10 +54,6 @@ public class LifecycleManager implements ContextVariables, ContextDefaultValues 
 	private void initializeContext(IEclipseContext context) {
 		/* initialized default repository location */
 		context.set(REPOSITORY_LOCATION_KEY, REPOSITORY_LOCATION_VALUE);
-
-		/* remember all input processors to be able to start the processes */
-		ArrayList<CanvasProcessorItem> items = new ArrayList<>();
-		context.set(CANVAS_INPUT_ITEMS, items);
 
 		ICanvasManager canvasObjectsManager = CanvasObjectsManager
 				.getInstance();

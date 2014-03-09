@@ -7,7 +7,7 @@
       </children>
       <children xsi:type="basic:PartStack" xmi:id="_ZixGIKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.partstack.1" containerData="80">
         <children xsi:type="basic:Part" xmi:id="_eMb_8KI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.part.1" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.MainCanvas" label="Canvas" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/canvas.png">
-          <handlers xmi:id="_8KWlQKPmEeOQsrsMDFxKhw" elementId="cz.martinbayer.e4.analyser.handler.canvasitem.delete" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.widgets.processoritem.actions.Delete" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+          <handlers xmi:id="_8KWlQKPmEeOQsrsMDFxKhw" elementId="cz.martinbayer.e4.analyser.handler.canvasitem.delete" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.widgets.processoritem.actions.RemoveItem" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
           <menus xsi:type="menu:PopupMenu" xmi:id="_WT7tUKPTEeOQsrsMDFxKhw" elementId="cz_martinbayer_e4_analyser_processor_popup_menu" label="">
             <children xsi:type="menu:HandledMenuItem" xmi:id="_d-9zcKZREeOuhonBQyr_Wg" elementId="cz_martinbayer_e4_analyser_processor_popup_menu.remove" label="Remove" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/remove.png" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
           </menus>
@@ -17,14 +17,15 @@
     <mainMenu xmi:id="_l_W34KMkEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.menu.0"/>
     <trimBars xmi:id="_k2S3o6ZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.trimbar.0">
       <children xsi:type="menu:ToolBar" xmi:id="_l3a9cKZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.toolbar.0">
-        <children xsi:type="menu:HandledToolItem" xmi:id="_mbfT0KZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.handledtoolitem.0" label="hhh" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_qb4LgKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.handledtoolitem.0" label="Validate and run" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/start_icon.png" tooltip="Validates created scheme and run processing" command="_hXeLwKfPEeOn1O_4RKo5Bg"/>
       </children>
     </trimBars>
     <trimBars xmi:id="_g5k9QKa7EeOTr5J_oebfHw" elementId="cz.martinbayer.e4.analyser.trimbar.bottom" side="Bottom">
       <children xsi:type="menu:ToolControl" xmi:id="_ysXjQKbYEeOJPM8fi6Ty5A" elementId="cz.martinbayer.e4.analyser.toolcontrol.1" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.statusbar.StatusBar"/>
     </trimBars>
   </children>
-  <handlers xmi:id="_P8thAKZOEeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.handler.canvasitem.delete" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.widgets.processoritem.actions.Delete" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+  <handlers xmi:id="_P8thAKZOEeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.handler.canvasitem.delete" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.widgets.processoritem.actions.RemoveItem" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+  <handlers xmi:id="_f2uxwKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.handler.validateandrun" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.handlers.ValidateAndRun" command="_hXeLwKfPEeOn1O_4RKo5Bg"/>
   <bindingTables xmi:id="_z-9boKI6EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.bindingtable.dialogAndWindow" bindingContext="_a3mgMKI7EeOZB_p0_meNYQ">
     <bindings xmi:id="_z94AQKJrEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.keybinding.delete" keySequence="M1+R" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
   </bindingTables>
@@ -33,6 +34,7 @@
     <children xmi:id="_1gki4KI7EeOZB_p0_meNYQ" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
   <commands xmi:id="_zB-EcKPmEeOQsrsMDFxKhw" elementId="cz.martinbayer.e4.analyser.command.canvasitem.delete" commandName="Delete processor" description="Deletes selected processor"/>
+  <commands xmi:id="_hXeLwKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.command.validateandrun" commandName="Validate and run" description="Validates scheme and if no errors are present, processing is started"/>
   <addons xmi:id="_tgspoaI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_tgspoqI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_tgspo6I4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

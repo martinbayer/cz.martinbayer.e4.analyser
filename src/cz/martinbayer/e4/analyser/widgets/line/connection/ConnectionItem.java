@@ -2,6 +2,7 @@ package cz.martinbayer.e4.analyser.widgets.line.connection;
 
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.e4.analyser.LoggerFactory;
@@ -19,8 +20,9 @@ public class ConnectionItem extends CanvasConnectionItem {
 	 */
 	private static final long serialVersionUID = 5154122088790476947L;
 
-	public ConnectionItem(Composite parent, int style, MApplication application) {
-		super(parent, style, application);
+	public ConnectionItem(Composite parent, int style,
+			MApplication application, EMenuService menuService) {
+		super(parent, style, application, menuService);
 	}
 
 	public CanvasProcessorItem getSourceItem() {
@@ -97,5 +99,17 @@ public class ConnectionItem extends CanvasConnectionItem {
 				logger.info("Destination connector removed");
 			}
 		}
+	}
+
+	@Override
+	public boolean remove() {
+		/* remove connection references for possible items */
+		if (sourceItem != null) {
+			sourceItem.removeConnector(this);
+		}
+		if (destinationItem != null) {
+			destinationItem.removeConnector(this);
+		}
+		return super.remove();
 	}
 }

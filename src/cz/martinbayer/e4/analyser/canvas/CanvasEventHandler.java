@@ -7,11 +7,14 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
+import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.Messages;
@@ -33,6 +36,9 @@ public abstract class CanvasEventHandler implements ICanvas {
 
 	@Inject
 	protected MApplication application;
+
+	@Inject
+	protected EMenuService menuService;
 
 	@Inject
 	protected IEclipseContext ctx;
@@ -97,6 +103,7 @@ public abstract class CanvasEventHandler implements ICanvas {
 	public void canvasProcessorSelected(
 			@UIEventTopic(ContextVariables.CANVAS_PROCESSOR_SELECTED) CanvasEvent<IProcessorItem> processorEvent) {
 		ctx.set(ContextVariables.CANVAS_PROCESSOR_SELECTED, processorEvent);
+		ctx.set(ContextVariables.CANVAS_CONNECTION_SELECTED, null);
 		if (canvasManager == null) {
 			logger.warn("Objects manager is not available yet.");
 			return;
@@ -137,6 +144,7 @@ public abstract class CanvasEventHandler implements ICanvas {
 	public void canvasConnectionSelected(
 			@UIEventTopic(value = ContextVariables.CANVAS_CONNECTION_SELECTED) CanvasEvent<ILine> connectionEvent) {
 		ctx.set(ContextVariables.CANVAS_CONNECTION_SELECTED, connectionEvent);
+		ctx.set(ContextVariables.CANVAS_PROCESSOR_SELECTED, null);
 		if (canvasManager == null) {
 			logger.warn("Objects manager is not available yet.");
 			return;
@@ -173,6 +181,15 @@ public abstract class CanvasEventHandler implements ICanvas {
 		ICanvasItem item = null;
 		if (canvasEvent != null && (item = canvasEvent.getItem()) != null) {
 			if (item instanceof ILine) {
+				// remove proper processor instances
+				LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
+						.getSourceItem().getItem().getLogic().getProcessor();
+				LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
+						.getDestinationItem().getItem().getLogic()
+						.getProcessor();
+				if (!sourceProcessor.removeProcessor(destinationProcessor)) {
+					logger.error("Unable to remove processor instance. Errors can occur");
+				}
 				canvasManager.removeLine((ILine) item);
 			} else if (item instanceof IProcessorItem) {
 				canvasManager.removeProcessor((IProcessorItem) item);
@@ -195,7 +212,7 @@ public abstract class CanvasEventHandler implements ICanvas {
 			if ((connection = (ConnectionItem) application.getContext().get(
 					ContextVariables.CANVAS_CONNECTION_CREATING)) == null) {
 				connection = new ConnectionItem(getInnerCanvasComposite(),
-						SWT.NONE, application);
+						SWT.NONE, application, menuService);
 				if (hoveredItem.addConnection(new ItemConnectionConnector(
 						connection, hoveredItem, LinePart.START_SPOT))) {
 					connection.setStartPoint(xCoord, yCoord,
@@ -208,6 +225,8 @@ public abstract class CanvasEventHandler implements ICanvas {
 					info.setStatusMessage(Messages.connectioncannotbeadded,
 							LinePart.START_SPOT);
 					StatusHandler.setStatus(info);
+					application.getContext().set(
+							ContextVariables.CANVAS_CONNECTION_CREATING, null);
 				}
 			} else {
 				// do not allow to add the connection to the same item and
@@ -230,6 +249,8 @@ public abstract class CanvasEventHandler implements ICanvas {
 					info.setStatusMessage(Messages.connectioncannotbeadded,
 							LinePart.END_SPOT);
 					StatusHandler.setStatus(info);
+					application.getContext().set(
+							ContextVariables.CANVAS_CONNECTION_CREATING, null);
 				}
 			}
 			// move the connection to the top on the canvas
@@ -242,6 +263,11 @@ public abstract class CanvasEventHandler implements ICanvas {
 			canvasManager.addProcessor((IProcessorItem) item);
 		} else if (item instanceof ILine) {
 			canvasManager.addLine((ILine) item);
+			LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
+					.getSourceItem().getItem().getLogic().getProcessor();
+			LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
+					.getDestinationItem().getItem().getLogic().getProcessor();
+			sourceProcessor.addNextProcessor(destinationProcessor);
 		} else {
 			logger.error("Unable to add item which is null or invalid type {}",
 					item);
