@@ -66,5 +66,4 @@ public class ProcessorPaletteItem implements SubPaletteItem {
 	public IProcessorItemWrapper<IXMLog> getItemWrapper() {
 		return itemWrapper;
 	}
-
 }

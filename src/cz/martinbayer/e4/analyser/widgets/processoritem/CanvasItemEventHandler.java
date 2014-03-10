@@ -32,7 +32,7 @@ public class CanvasItemEventHandler implements MouseMoveListener,
 
 	@Override
 	public void mouseDoubleClick(MouseEvent e) {
-		this.item.getItem().getItemWrapper().mouseDoubleClicked(e);
+		this.item.getItem().mouseDoubleClicked(e);
 	}
 
 	@Override

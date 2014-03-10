@@ -122,7 +122,7 @@ public class CanvasObjectsManager implements ICanvasManager {
 	public List<IProcessorItem> getInputProcessors() {
 		List<IProcessorItem> result = new ArrayList<>();
 		for (IProcessorItem item : processors) {
-			if (item.getItem().getLogic().getProcessor() instanceof InputProcessor) {
+			if (item.getItem().getProcessorLogic().getProcessor() instanceof InputProcessor) {
 				result.add(item);
 			}
 		}

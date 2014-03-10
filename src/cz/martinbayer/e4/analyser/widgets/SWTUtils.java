@@ -6,8 +6,12 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -46,5 +50,15 @@ public class SWTUtils {
 				.find(bundle, new Path("icons/" + imageName), null);
 		ImageDescriptor image = ImageDescriptor.createFromURL(url);
 		return image.createImage();
+	}
+
+	public static Point getTextSize(Text t, int stringLength) {
+		GC gc = new GC(t);
+		FontMetrics fm = gc.getFontMetrics();
+		int width = stringLength * fm.getAverageCharWidth();
+		int height = fm.getHeight();
+		gc.dispose();
+		Point size = t.computeSize(width, height);
+		return size;
 	}
 }

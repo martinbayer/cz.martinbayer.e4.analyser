@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
@@ -64,8 +65,11 @@ public class CanvasMouseAdapter extends MouseAdapter {
 			CanvasProcessorItem item = new CanvasProcessorItem(canvas,
 					SWT.NONE, selectedPaletteItem, menuService,
 					application.getContext());
+			Text t1 = new Text(canvas, SWT.BORDER);
+			item.setText(t1);
 			item.setLocation(e.x, e.y);
 			item.pack();
+			t1.pack();
 			initDnD(item);
 			mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
 					SWT.DEFAULT));
@@ -91,7 +95,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 				Image image;
 				if (composite instanceof CanvasProcessorItem) {
 					image = ((CanvasProcessorItem) composite).getItem()
-							.getImage().createImage();
+							.getProcessorPaletteItem()
+							.getSmallImageDescriptor().createImage();
 				} else {
 					// Getting dimensions of this widget
 					Point compositeSize = composite.getSize();

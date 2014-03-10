@@ -23,7 +23,7 @@ public class ValidateAndRun {
 			@Optional @Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager manager) {
 
 		InputProcessor<IXMLog> processor = (InputProcessor<IXMLog>) manager
-				.getInputProcessors().get(0).getItem().getLogic()
+				.getInputProcessors().get(0).getItem().getProcessorLogic()
 				.getProcessor();
 		processor.run();
 

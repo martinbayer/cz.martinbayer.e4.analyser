@@ -23,8 +23,8 @@ public class StatusBar {
 
 	protected static final String EMPTY = "";
 
-	/* status bar will be cleaned in 5 seconds by default */
-	protected static final long CLEAN_TIMEOUT = 5000;
+	/* status bar will be cleaned in 10 seconds by default */
+	protected static final long CLEAN_TIMEOUT = 10000;
 	private Label actualStatusLabel;
 
 	private Thread cleanerThread;

@@ -183,9 +183,10 @@ public abstract class CanvasEventHandler implements ICanvas {
 			if (item instanceof ILine) {
 				// remove proper processor instances
 				LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
-						.getSourceItem().getItem().getLogic().getProcessor();
+						.getSourceItem().getItem().getProcessorLogic()
+						.getProcessor();
 				LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
-						.getDestinationItem().getItem().getLogic()
+						.getDestinationItem().getItem().getProcessorLogic()
 						.getProcessor();
 				if (!sourceProcessor.removeProcessor(destinationProcessor)) {
 					logger.error("Unable to remove processor instance. Errors can occur");
@@ -264,9 +265,11 @@ public abstract class CanvasEventHandler implements ICanvas {
 		} else if (item instanceof ILine) {
 			canvasManager.addLine((ILine) item);
 			LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
-					.getSourceItem().getItem().getLogic().getProcessor();
+					.getSourceItem().getItem().getProcessorLogic()
+					.getProcessor();
 			LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
-					.getDestinationItem().getItem().getLogic().getProcessor();
+					.getDestinationItem().getItem().getProcessorLogic()
+					.getProcessor();
 			sourceProcessor.addNextProcessor(destinationProcessor);
 		} else {
 			logger.error("Unable to add item which is null or invalid type {}",

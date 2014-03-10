@@ -9,6 +9,8 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -17,13 +19,17 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 
+import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
+import cz.martinbayer.analyser.processors.model.IXMLog;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.Messages;
 import cz.martinbayer.e4.analyser.canvas.utils.CanvasConnectorUtils;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
+import cz.martinbayer.e4.analyser.widgets.SWTUtils;
 import cz.martinbayer.e4.analyser.widgets.line.LinePart;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
@@ -34,13 +40,12 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	/**
 	 * 
 	 */
-	public static final Point DEFAULT_SIZE = new Point(40, 40);
+	public static final Point DEFAULT_SIZE = new Point(30, 30);
 	private static final long serialVersionUID = -2213613605192127483L;
 	private GridLayout itemLayout;
 	private Point imageSize;
 	private ImageDescriptor image;
 	private Point selectionOffsetPoint;
-	private ProcessorPaletteItem item;
 	private List<ItemConnectionConnector> connectors;
 	private CanvasItemEventHandler eventHandler;
 	private IEclipseContext context;
@@ -51,6 +56,8 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	private boolean selected = false;
 	private boolean taken = false;
 	private boolean hovered = false;
+	private Text text;
+	private IProcessorItemWrapper<IXMLog> item;
 
 	public CanvasProcessorItem(Composite parent, int style,
 			ProcessorPaletteItem selectedObject, EMenuService menuService,
@@ -69,7 +76,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 			IEclipseContext context, int neededImageHeight, int neededImageWidth) {
 		super(parent, style | SWT.BORDER);
 		this.connectors = new ArrayList<>();
-		this.item = selectedObject;
+		this.item = selectedObject.getItemWrapper().getInstance();
 		this.imageSize = new Point(neededImageWidth, neededImageHeight);
 		this.image = selectedObject.getImage();
 		this.context = context;
@@ -161,11 +168,6 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		return this.selectionOffsetPoint;
 	}
 
-	@Override
-	public ProcessorPaletteItem getItem() {
-		return item;
-	}
-
 	public void move(int moveX, int moveY) {
 		Point actualLocation = getLocation();
 		setLocation(actualLocation.x + moveX, actualLocation.y + moveY);
@@ -218,13 +220,11 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	 */
 	private boolean canBeSetForProcessor(ItemConnectionConnector connector) {
 		if (connector.getPart() == LinePart.START_SPOT) {
-			if (getItem().getItemWrapper().getProcessorLogic().getProcessor()
-					.canAddOutProc()) {
+			if (item.getProcessorLogic().getProcessor().canAddOutProc()) {
 				return true;
 			}
 		} else if (connector.getPart() == LinePart.END_SPOT) {
-			if (getItem().getItemWrapper().getProcessorLogic().getProcessor()
-					.canAddInProc()) {
+			if (item.getProcessorLogic().getProcessor().canAddInProc()) {
 				return true;
 			}
 		}
@@ -276,14 +276,15 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	}
 
 	public boolean removeConnector(ConnectionItem connectionItem) {
-		int i = -1;
-		for (i = 0; i < this.connectors.size(); i++) {
+		int connectorIndex = -1;
+		for (int i = 0; i < this.connectors.size(); i++) {
 			if (this.connectors.get(i).getConnection().equals(connectionItem)) {
+				connectorIndex = i;
 				break;
 			}
 		}
-		if (i >= 0) {
-			this.connectors.remove(i);
+		if (connectorIndex >= 0) {
+			this.connectors.remove(connectorIndex);
 			logger.info("Connector {0} removed from processor {1}",
 					connectionItem, this);
 			return true;
@@ -296,17 +297,56 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		removeConnections();
 		setVisible(false);
 		eventHandler.itemDisposed();
+		text.dispose();
 		return true;
 	}
 
 	private void removeConnections() {
-		for (ItemConnectionConnector connector : this.connectors) {
+		ArrayList<ItemConnectionConnector> connectorsCopyArrayList = new ArrayList<>(
+				connectors);
+		for (ItemConnectionConnector connector : connectorsCopyArrayList) {
 			/* remove source destination's connector reference */
-			connector.getConnection().removeItemsRefs(connector, this);
+			// connector.getConnection().removeItemsRefs(connector, this);
 			connector.getConnection().remove();
 		}
 		this.connectors.clear();
 		this.connectors = null;
+	}
+
+	public void setText(Text text) {
+		this.text = text;
+		this.text.setCursor(new Cursor(null, SWT.CURSOR_IBEAM));
+		this.text.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				Text t = (Text) e.widget;
+				String s = ((Text) e.widget).getText();
+				Point size = SWTUtils.getTextSize(t, s.length());
+				t.setSize(size.x + 10, size.y);
+				Point controlLocation = getLocation();
+				t.setLocation(controlLocation.x + getSize().x / 2 - size.x / 2,
+						controlLocation.y + getSize().y);
+			}
+		});
+		this.text.setLocation(getLocation().x + getSize().x / 2 - getSize().x
+				/ 2, getLocation().y + getSize().y);
+		this.text.setSize(SWTUtils.getTextSize(text, 1));
+		this.text.redraw();
+		/* bind the text value with name property of the processor */
+	}
+
+	@Override
+	public void setLocation(int x, int y) {
+		if (this.text != null) {
+			this.text.setLocation(x, y + 30 + 20);
+		}
+		super.setLocation(x, y);
+	}
+
+	@Override
+	public IProcessorItemWrapper<IXMLog> getItem() {
+		return item;
 	}
 
 }
