@@ -52,6 +52,15 @@ public class SWTUtils {
 		return image.createImage();
 	}
 
+	public static Image getImage(String folderName, String imageName,
+			Class<?> clazz) {
+		Bundle bundle = FrameworkUtil.getBundle(clazz);
+		URL url = FileLocator.find(bundle, new Path(folderName + "/"
+				+ imageName), null);
+		ImageDescriptor image = ImageDescriptor.createFromURL(url);
+		return image.createImage();
+	}
+
 	public static Point getTextSize(Text t, int stringLength) {
 		GC gc = new GC(t);
 		FontMetrics fm = gc.getFontMetrics();

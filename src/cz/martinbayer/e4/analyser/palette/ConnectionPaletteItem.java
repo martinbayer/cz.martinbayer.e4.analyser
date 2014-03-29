@@ -25,4 +25,8 @@ public class ConnectionPaletteItem implements PaletteItem {
 		return ImageUtils.getImage(path.toString(), bundle, 20, 20);
 	}
 
+	@Override
+	public ImageDescriptor getDisabledImage() {
+		throw new UnsupportedOperationException("Connection cannot be disabled");
+	}
 }

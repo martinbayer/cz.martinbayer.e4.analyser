@@ -2,6 +2,8 @@ package cz.martinbayer.e4.analyser.canvas;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.e4.core.services.log.Logger;
 
@@ -15,6 +17,7 @@ import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 
 public class CanvasObjectsManager implements ICanvasManager {
 	private Logger logger = LoggerFactory.getInstance(getClass());
+	private ConcurrentHashMap<Class<?>, AtomicInteger> procTypes = new ConcurrentHashMap<>();
 
 	private static CanvasObjectsManager instance;
 	private List<ILine> lines = new ArrayList<>();
@@ -103,6 +106,15 @@ public class CanvasObjectsManager implements ICanvasManager {
 	public boolean addProcessor(IProcessorItem processor) {
 		if (!this.processors.contains(processor)) {
 			this.processors.add(processor);
+			if (!procTypes.containsKey(processor.getItem().getProcessorLogic()
+					.getProcessor().getClass())) {
+				procTypes.put(processor.getItem().getProcessorLogic()
+						.getProcessor().getClass(), new AtomicInteger(1));
+			} else {
+				procTypes.get(
+						processor.getItem().getProcessorLogic().getProcessor()
+								.getClass()).incrementAndGet();
+			}
 			logger.info("Processor added {0}", processor);
 			return true;
 		}
@@ -112,6 +124,9 @@ public class CanvasObjectsManager implements ICanvasManager {
 	@Override
 	public boolean removeProcessor(IProcessorItem processor) {
 		if (this.processors.remove(processor)) {
+			procTypes.get(
+					processor.getItem().getProcessorLogic().getProcessor()
+							.getClass()).decrementAndGet();
 			logger.info("Processor {0} succesfully removed", processor);
 			return true;
 		}
@@ -127,5 +142,17 @@ public class CanvasObjectsManager implements ICanvasManager {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public String getDefaultNameForProcessor(IProcessorItem procItem) {
+		StringBuffer sbName = new StringBuffer();
+		/* use label name for the processor */
+		sbName.append(procItem.getItem().getProcessorPaletteItem().getLabel());
+		sbName.append("_").append(
+				procTypes.get(
+						procItem.getItem().getProcessorLogic().getProcessor()
+								.getClass()).get());
+		return sbName.toString();
 	}
 }

@@ -2,7 +2,7 @@ package cz.martinbayer.e4.analyser.widgets.line.connection;
 
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.e4.analyser.LoggerFactory;

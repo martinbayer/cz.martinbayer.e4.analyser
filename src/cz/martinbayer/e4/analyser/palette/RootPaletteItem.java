@@ -46,4 +46,9 @@ public class RootPaletteItem implements PaletteItem {
 	public void addChild(PaletteItem child) {
 		this.children.add(child);
 	}
+
+	@Override
+	public ImageDescriptor getDisabledImage() {
+		throw new UnsupportedOperationException("Root item cannot be disabled");
+	}
 }

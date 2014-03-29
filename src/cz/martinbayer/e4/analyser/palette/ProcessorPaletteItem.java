@@ -29,12 +29,19 @@ public class ProcessorPaletteItem implements SubPaletteItem {
 
 	@Override
 	public String getLabel() {
-		return logic.getProcessor().getName();
+		return this.item.getLabel();
 	}
 
 	@Override
 	public ImageDescriptor getImage() {
 		return item.getImageDescriptor(CanvasProcessorItem.DEFAULT_SIZE.x,
+				CanvasProcessorItem.DEFAULT_SIZE.x);
+	}
+
+	@Override
+	public ImageDescriptor getDisabledImage() {
+		return item.getDisabledImageDescriptor(
+				CanvasProcessorItem.DEFAULT_SIZE.x,
 				CanvasProcessorItem.DEFAULT_SIZE.x);
 	}
 

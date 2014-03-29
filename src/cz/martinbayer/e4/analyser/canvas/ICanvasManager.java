@@ -30,4 +30,6 @@ public interface ICanvasManager {
 	void hoverItem(CanvasEvent<ICanvasItem> event);
 
 	List<IProcessorItem> getInputProcessors();
+
+	String getDefaultNameForProcessor(IProcessorItem procItem);
 }

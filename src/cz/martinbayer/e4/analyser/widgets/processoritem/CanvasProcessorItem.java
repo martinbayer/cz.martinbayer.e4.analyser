@@ -1,12 +1,18 @@
 package cz.martinbayer.e4.analyser.widgets.processoritem;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
+import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -23,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
 import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.Messages;
@@ -44,7 +51,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	private static final long serialVersionUID = -2213613605192127483L;
 	private GridLayout itemLayout;
 	private Point imageSize;
-	private ImageDescriptor image;
+	private ImageDescriptor image, disabledImage;
 	private Point selectionOffsetPoint;
 	private List<ItemConnectionConnector> connectors;
 	private CanvasItemEventHandler eventHandler;
@@ -77,14 +84,29 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		super(parent, style | SWT.BORDER);
 		this.connectors = new ArrayList<>();
 		this.item = selectedObject.getItemWrapper().getInstance();
+		initProcessorListener(this.item);
 		this.imageSize = new Point(neededImageWidth, neededImageHeight);
 		this.image = selectedObject.getImage();
+		this.disabledImage = selectedObject.getDisabledImage();
 		this.context = context;
 		initPopupMenu(menuService);
 		checkImage(this.image);
 		initLayout();
 		initListeners();
 		setCursor(new Cursor(null, SWT.CURSOR_HAND));
+	}
+
+	private void initProcessorListener(IProcessorItemWrapper<IXMLog> item) {
+		item.getProcessorLogic()
+				.getProcessor()
+				.addPropertyChangeListener(LogProcessor.PROPERTY_ENABLED,
+						new PropertyChangeListener() {
+
+							@Override
+							public void propertyChange(PropertyChangeEvent evt) {
+								redraw();
+							}
+						});
 	}
 
 	@Override
@@ -128,7 +150,11 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 					e.gc.fillRectangle(0, 0, getBounds().width,
 							getBounds().height);
 				}
-				e.gc.drawImage(image.createImage(), 10, 10);
+				if (item.getProcessorLogic().getProcessor().isEnabled()) {
+					e.gc.drawImage(image.createImage(), 10, 10);
+				} else {
+					e.gc.drawImage(disabledImage.createImage(), 10, 10);
+				}
 			}
 		});
 		addMouseMoveListener(eventHandler);
@@ -325,23 +351,34 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 				Point size = SWTUtils.getTextSize(t, s.length());
 				t.setSize(size.x + 10, size.y);
 				Point controlLocation = getLocation();
-				t.setLocation(controlLocation.x + getSize().x / 2 - size.x / 2,
-						controlLocation.y + getSize().y);
+				t.setLocation(controlLocation.x + getSize().x / 2
+						- t.getSize().x / 2, controlLocation.y + getSize().y);
 			}
 		});
-		this.text.setLocation(getLocation().x + getSize().x / 2 - getSize().x
-				/ 2, getLocation().y + getSize().y);
 		this.text.setSize(SWTUtils.getTextSize(text, 1));
-		this.text.redraw();
+		this.text.setLocation(
+				getLocation().x + getSize().x / 2 - text.getSize().x / 2,
+				getLocation().y + getSize().y);
+		this.text.getParent().layout();
+
 		/* bind the text value with name property of the processor */
+		DataBindingContext ctx = new DataBindingContext();
+		IObservableValue model = BeanProperties.value(LogProcessor.class,
+				LogProcessor.PROPERTY_NAME).observe(
+				this.item.getProcessorLogic().getProcessor());
+		IObservableValue target = WidgetProperties.text(SWT.Modify).observe(
+				text);
+		ctx.bindValue(target, model);
 	}
 
 	@Override
 	public void setLocation(int x, int y) {
-		if (this.text != null) {
-			this.text.setLocation(x, y + 30 + 20);
-		}
 		super.setLocation(x, y);
+		if (this.text != null) {
+			this.text.setLocation(
+					getLocation().x + getSize().x / 2 - text.getSize().x / 2,
+					getLocation().y + getSize().y);
+		}
 	}
 
 	@Override

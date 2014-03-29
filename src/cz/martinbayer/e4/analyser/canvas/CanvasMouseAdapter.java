@@ -1,7 +1,7 @@
 package cz.martinbayer.e4.analyser.canvas;
 
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.workbench.swt.modeling.EMenuService;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -74,6 +74,10 @@ public class CanvasMouseAdapter extends MouseAdapter {
 			mainComposite.setMinSize(canvas.computeSize(SWT.DEFAULT,
 					SWT.DEFAULT));
 			mainCanvas.addItem(item);
+			String defaultName = ((CanvasObjectsManager) application
+					.getContext().get(ContextVariables.CANVAS_OBJECTS_MANAGER))
+					.getDefaultNameForProcessor(item);
+			t1.setText(defaultName);
 		}
 	}
 
