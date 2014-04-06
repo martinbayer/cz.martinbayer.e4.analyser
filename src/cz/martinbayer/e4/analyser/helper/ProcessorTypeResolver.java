@@ -8,10 +8,10 @@ import cz.martinbayer.analyser.processors.types.OutputProcessor;
 
 public class ProcessorTypeResolver {
 	public enum ProcessorType {
-		INPUT_PROCESSOR("input_processor", "input_processor"), LOG_PROCESSOR(
-				"log_processor", "log_processor"), OUTPUT_PROCESSOR(
-				"output_processor", "output_processor"), CONDITIONAL_PROCESSOR(
-				"conditional_processor", "conditional_processor");
+		INPUT_PROCESSOR("Input processor", "input_processor"), LOG_PROCESSOR(
+				"Log processor", "log_processor"), OUTPUT_PROCESSOR(
+				"Output processor", "output_processor"), CONDITIONAL_PROCESSOR(
+				"Conditional processor", "conditional_processor");
 
 		private String iconName;
 		private String typeName;

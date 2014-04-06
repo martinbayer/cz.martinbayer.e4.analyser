@@ -37,7 +37,7 @@ public class PalettePart {
 	public void postConstruct(Composite parent, MApplication application,
 			EMenuService menuService) {
 
-		logger.debug("initialized");
+		logger.debug("palette initialized");
 		viewer = new TreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		viewer.setContentProvider(new ProcessorsContentProvider());

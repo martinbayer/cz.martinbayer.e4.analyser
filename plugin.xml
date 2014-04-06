@@ -11,6 +11,10 @@
                value="platform:/plugin/cz.martinbayer.e4.analyser/css/default.css">
          </property>
          <property
+               name="applicationXMI"
+               value="platform:/plugin/cz.martinbayer.e4.analyser/Application.e4xmi">
+         </property>
+         <property
                name="appName"
                value="cz.martinbayer.e4.analyser">
          </property>

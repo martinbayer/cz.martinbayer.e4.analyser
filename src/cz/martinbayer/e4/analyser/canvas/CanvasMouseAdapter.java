@@ -66,6 +66,10 @@ public class CanvasMouseAdapter extends MouseAdapter {
 					SWT.NONE, selectedPaletteItem, menuService,
 					application.getContext());
 			Text t1 = new Text(canvas, SWT.BORDER);
+			/*
+			 * text is added to item, also binding between item logic and text
+			 * is created
+			 */
 			item.setText(t1);
 			item.setLocation(e.x, e.y);
 			item.pack();
@@ -77,6 +81,10 @@ public class CanvasMouseAdapter extends MouseAdapter {
 			String defaultName = ((CanvasObjectsManager) application
 					.getContext().get(ContextVariables.CANVAS_OBJECTS_MANAGER))
 					.getDefaultNameForProcessor(item);
+			/*
+			 * text of the Text component is binded to processor so it is its
+			 * name in real
+			 */
 			t1.setText(defaultName);
 		}
 	}

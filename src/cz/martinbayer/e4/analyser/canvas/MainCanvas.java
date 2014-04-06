@@ -7,6 +7,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.IBundleGroup;
+import org.eclipse.core.runtime.IBundleGroupProvider;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
@@ -51,8 +54,10 @@ public class MainCanvas extends CanvasEventHandler {
 	public void postConstruct(
 			Composite parent,
 			EMenuService menuService,
-			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager) {
+			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager,
+			org.eclipse.e4.core.services.log.Logger l) {
 		super.postConstruct(canvasManager);
+		printPlugins();
 		this.menuService = menuService;
 		Composite mainComp = new Composite(parent, SWT.NONE);
 		mainComp.setLayout(new FillLayout());
@@ -70,6 +75,19 @@ public class MainCanvas extends CanvasEventHandler {
 		scrolledComposite.setExpandHorizontal(true);
 		scrolledComposite.setMinSize(canvasInnerComposite.computeSize(
 				SWT.DEFAULT, SWT.DEFAULT));
+	}
+
+	private void printPlugins() {
+		for (IBundleGroupProvider provider : Platform.getBundleGroupProviders()) {
+			for (IBundleGroup feature : provider.getBundleGroups()) {
+				final String providerName = feature.getProviderName();
+				final String featureId = feature.getIdentifier();
+				for (Bundle bundle : feature.getBundles()) {
+					logger.debug(bundle.getSymbolicName() + ":"
+							+ bundle.getState());
+				}
+			}
+		}
 	}
 
 	private void initDnDTarget(final Composite canvas) {

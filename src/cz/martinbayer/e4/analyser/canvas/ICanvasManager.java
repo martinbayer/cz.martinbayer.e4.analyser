@@ -15,8 +15,6 @@ public interface ICanvasManager {
 
 	void selectItem(ICanvasItem item, boolean select);
 
-	// void hoverItem(ICanvasItem item, boolean hover);
-
 	void takeItem(ICanvasItem item, boolean take);
 
 	boolean addLine(ILine line);

@@ -14,10 +14,6 @@ import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
 
 public class ValidateAndRun {
 
-	public ValidateAndRun() {
-		System.out.println("sass");
-	}
-
 	@Execute
 	public void execute(
 			@Optional @Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager manager) {

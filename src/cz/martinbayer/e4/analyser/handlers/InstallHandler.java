@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+
+import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -15,6 +18,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
@@ -33,33 +37,53 @@ import org.eclipse.equinox.p2.query.QueryUtil;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
+
 public class InstallHandler {
-	private static final String REPOSITORY_LOC = "D://School/Mgr/Diploma thesis/workspace/ProcessorPlugins/cz.martinbayer.updatesite/";
+	@Inject
+	private Logger logger;
+
+	private static final String REPOSITORY_LOC = "D:/School/Mgr/Diploma thesis/workspace/LogAnalysis/cz.martinbayer.processors.site/";
 
 	@Execute
 	public void execute(final IProvisioningAgent agent, final Shell parent,
 			final UISynchronize sync, final IWorkbench workbench) {
+		InputDialog dialog = new InputDialog(parent,
+				"Insert repository location",
+				"Insert the value for repository location", "", null);
+		dialog.create();
+		int status = dialog.open();
+		String value = dialog.getValue();
+		if (status != Dialog.OK || value == null) {
+			return;
+		}
 		Job j = new Job("Install Job") {
 			private boolean doInstall = false;
 
 			@Override
 			protected IStatus run(final IProgressMonitor monitor) {
-
+				logger.info("installation started");
 				try {
 					// create uri
 					URI uri = null;
 					try {
 						File repoFolder = new File(REPOSITORY_LOC);
+
 						if (!repoFolder.exists()) {
+							logger.info("repository not found:"
+									+ repoFolder.getPath());
 							throw new FileNotFoundException(
 									"File wasn't found:" + REPOSITORY_LOC);
 						}
+						logger.info("repository found:" + repoFolder.getPath());
 						uri = repoFolder.toURI();
 					} catch (final FileNotFoundException e) {
 						sync.syncExec(new Runnable() {
@@ -73,27 +97,48 @@ public class InstallHandler {
 					}
 					Collection<IInstallableUnit> toInstall = getInstallableUnits(
 							uri, monitor);
-
+					logger.info("count of installable units:"
+							+ toInstall.size());
+					HashSet<IInstallableUnit> processors = new HashSet<IInstallableUnit>();
+					for (IInstallableUnit unit : toInstall) {
+						String serviceClass = unit.getProperty("service.name");
+						if (IProcessorItemWrapper.SERVICE_NAME
+								.equals(serviceClass)) {
+							processors.add(unit);
+						}
+					}
 					/* 1. Prepare update plumbing */
 
 					final ProvisioningSession session = new ProvisioningSession(
 							agent);
-					final InstallOperation operation = new InstallOperation(
-							session, toInstall);
+					final InstallOperation installOperation = new InstallOperation(
+							session, processors);
+
+					// final UpdateOperation updateOperation = new
+					// UpdateOperation(
+					// session, processors);
 
 					// set location of artifact and metadata repo
-					operation.getProvisioningContext().setArtifactRepositories(
-							new URI[] { uri });
-					operation.getProvisioningContext().setMetadataRepositories(
-							new URI[] { uri });
+					installOperation.getProvisioningContext()
+							.setArtifactRepositories(new URI[] { uri });
+					installOperation.getProvisioningContext()
+							.setMetadataRepositories(new URI[] { uri });
+					// set location of artifact and metadata repo
+					// updateOperation.getProvisioningContext()
+					// .setArtifactRepositories(new URI[] { uri });
+					// updateOperation.getProvisioningContext()
+					// .setMetadataRepositories(new URI[] { uri });
 
 					/* 2. check for updates */
 
 					// run update checks causing I/O
-					final IStatus status = operation.resolveModal(monitor);
+					final IStatus installStatus = installOperation
+							.resolveModal(monitor);
+					// final IStatus updateStatus = updateOperation
+					// .resolveModal(monitor);
 
 					// failed to find updates (inform user and exit)
-					if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
+					if (installStatus.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
 						sync.syncExec(new Runnable() {
 							@Override
 							public void run() {
@@ -111,56 +156,66 @@ public class InstallHandler {
 					 */
 
 					// found updates, ask user if to install?
-					if (status.isOK() && status.getSeverity() != IStatus.ERROR) {
+					if ((installStatus.isOK() && installStatus.getSeverity() != IStatus.ERROR)) {
 						sync.syncExec(new Runnable() {
 							@Override
 							public void run() {
-								doInstall = MessageDialog.openQuestion(parent,
-										"Really install updates?",
-										operation.getResolutionDetails());
+								doInstall = MessageDialog
+										.openQuestion(parent,
+												"Really install updates?",
+												installOperation
+														.getResolutionDetails());
 							}
 						});
 					}
 
-					// start installation
 					if (doInstall) {
-						final ProvisioningJob provisioningJob = operation
+						final ProvisioningJob installProvisioningJob = installOperation
 								.getProvisioningJob(monitor);
 						// updates cannot run from within Eclipse IDE!!!
-						if (provisioningJob == null) {
+						if (installProvisioningJob == null) {
 							System.err
 									.println("Running update from within Eclipse IDE? This won't work!!!");
 							throw new NullPointerException();
 						}
+						// final ProvisioningJob updateProvisioningJob =
+						// updateOperation
+						// .getProvisioningJob(monitor);
+						// updates cannot run from within Eclipse IDE!!!
+						// if (updateProvisioningJob == null) {
+						// logger.warn("no updates found");
+						// }
+						JobChangeAdapter adapter = new JobChangeAdapter() {
+							@Override
+							public void done(IJobChangeEvent event) {
+								if (event.getResult().isOK()) {
+									sync.syncExec(new Runnable() {
 
+										@Override
+										public void run() {
+											boolean restart = MessageDialog
+													.openQuestion(
+															parent,
+															"Updates installed, restart?",
+															"Updates have been installed successfully, do you want to restart?");
+											if (restart) {
+												workbench.restart();
+											}
+										}
+									});
+
+								}
+								super.done(event);
+							}
+						};
 						// register a job change listener to track
 						// installation progress and notify user upon success
-						provisioningJob
-								.addJobChangeListener(new JobChangeAdapter() {
-									@Override
-									public void done(IJobChangeEvent event) {
-										if (event.getResult().isOK()) {
-											sync.syncExec(new Runnable() {
-
-												@Override
-												public void run() {
-													boolean restart = MessageDialog
-															.openQuestion(
-																	parent,
-																	"Updates installed, restart?",
-																	"Updates have been installed successfully, do you want to restart?");
-													if (restart) {
-														workbench.restart();
-													}
-												}
-											});
-
-										}
-										super.done(event);
-									}
-								});
-
-						provisioningJob.schedule();
+						installProvisioningJob.addJobChangeListener(adapter);
+						installProvisioningJob.schedule();
+						// if (updateProvisioningJob != null) {
+						// updateProvisioningJob.addJobChangeListener(adapter);
+						// updateProvisioningJob.schedule();
+						// }
 					}
 				} catch (ProvisionException e1) {
 					// TODO Auto-generated catch block

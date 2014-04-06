@@ -8,7 +8,7 @@ import cz.martinbayer.utils.ImageUtils;
 
 public class ConnectionPaletteItem implements PaletteItem {
 
-	private String label = "connection_item";
+	private String label = "Connection";
 	private String icon = "connection_item";
 
 	@Override

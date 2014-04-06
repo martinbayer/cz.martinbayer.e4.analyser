@@ -36,10 +36,10 @@ import cz.martinbayer.e4.analyser.Messages;
 import cz.martinbayer.e4.analyser.canvas.utils.CanvasConnectorUtils;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
-import cz.martinbayer.e4.analyser.widgets.SWTUtils;
 import cz.martinbayer.e4.analyser.widgets.line.LinePart;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
+import cz.martinbayer.utils.gui.SWTUtils;
 
 public class CanvasProcessorItem extends Composite implements Serializable,
 		IProcessorItem {
@@ -58,7 +58,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	private IEclipseContext context;
 	private final Color hoveredDefaultColor = ColorUtils
 			.getColor(SWT.COLOR_BLACK), selectedDefaultColor = ColorUtils
-			.getColor(SWT.COLOR_RED), takenDefaultColor = ColorUtils
+			.getColor(SWT.COLOR_DARK_GRAY), takenDefaultColor = ColorUtils
 			.getColor(SWT.COLOR_BLUE);
 	private boolean selected = false;
 	private boolean taken = false;
@@ -123,7 +123,6 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 
 	@Override
 	public void setSelected(boolean selected) {
-		// setBackground(selectedDefaultColor);
 		this.selected = selected;
 		redraw();
 	}

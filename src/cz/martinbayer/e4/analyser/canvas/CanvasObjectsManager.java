@@ -1,6 +1,7 @@
 package cz.martinbayer.e4.analyser.canvas;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,6 +19,7 @@ import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 public class CanvasObjectsManager implements ICanvasManager {
 	private Logger logger = LoggerFactory.getInstance(getClass());
 	private ConcurrentHashMap<Class<?>, AtomicInteger> procTypes = new ConcurrentHashMap<>();
+	private HashSet<String> procNames = new HashSet<>();
 
 	private static CanvasObjectsManager instance;
 	private List<ILine> lines = new ArrayList<>();
@@ -124,10 +126,18 @@ public class CanvasObjectsManager implements ICanvasManager {
 	@Override
 	public boolean removeProcessor(IProcessorItem processor) {
 		if (this.processors.remove(processor)) {
-			procTypes.get(
-					processor.getItem().getProcessorLogic().getProcessor()
-							.getClass()).decrementAndGet();
-			logger.info("Processor {0} succesfully removed", processor);
+			/*
+			 * do not decrement the counter because if one element is added,
+			 * second element is added and then first is removed and one more is
+			 * added, there would be two processors with the same name
+			 */
+			// procTypes.get(
+			// processor.getItem().getProcessorLogic().getProcessor()
+			// .getClass()).decrementAndGet();
+			procNames.remove(processor.getItem().getProcessorLogic()
+					.getProcessor().getName());
+			logger.info("Processor {0} succesfully removed", processor
+					.getItem().getProcessorLogic().getProcessor().getName());
 			return true;
 		}
 		return false;
@@ -149,10 +159,17 @@ public class CanvasObjectsManager implements ICanvasManager {
 		StringBuffer sbName = new StringBuffer();
 		/* use label name for the processor */
 		sbName.append(procItem.getItem().getProcessorPaletteItem().getLabel());
-		sbName.append("_").append(
-				procTypes.get(
-						procItem.getItem().getProcessorLogic().getProcessor()
-								.getClass()).get());
-		return sbName.toString();
+		sbName.append("_");
+		AtomicInteger index = new AtomicInteger();
+		boolean named = false;
+		while (!named) {
+			String name = new StringBuffer(sbName).append(
+					String.valueOf(index.incrementAndGet())).toString();
+			if (procNames.add(name)) {
+				named = true;
+				return name;
+			}
+		}
+		return null;
 	}
 }

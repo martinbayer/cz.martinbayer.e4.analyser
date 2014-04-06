@@ -7,10 +7,21 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
+
+   <launcher>
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -95,10 +106,24 @@
 
    <features>
       <feature id="org.eclipse.e4.rcp"/>
+      <feature id="cz.martinbayer.e4.analyser.feature" version="1.0.0.qualifier"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.e4.core.tools.feature"/>
-      <feature id="org.eclipse.e4.tools.css.spy.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.equinox.p2.sdk" version="3.9.0.v20140304-1321"/>
+      <feature id="org.eclipse.ecf.core.source.feature"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.source.feature"/>
+      <feature id="org.eclipse.ecf.core.ssl.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.source.feature"/>
    </features>
 
 

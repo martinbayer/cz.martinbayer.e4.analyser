@@ -18,7 +18,9 @@
         </children>
       </children>
     </children>
-    <mainMenu xmi:id="_l_W34KMkEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.menu.0"/>
+    <mainMenu xmi:id="_l_W34KMkEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.menu.0">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_hd36kLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.install" label="Install processors" command="_YN3HwLxbEeO6cNJO7OpzPw"/>
+    </mainMenu>
     <trimBars xmi:id="_k2S3o6ZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.trimbar.0">
       <children xsi:type="menu:ToolBar" xmi:id="_l3a9cKZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.toolbar.0">
         <children xsi:type="menu:HandledToolItem" xmi:id="_qb4LgKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.handledtoolitem.0" label="Validate and run" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/start_icon.png" tooltip="Validates created scheme and run processing" command="_hXeLwKfPEeOn1O_4RKo5Bg"/>
@@ -29,6 +31,7 @@
     </trimBars>
   </children>
   <handlers xmi:id="_f2uxwKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.handler.validateandrun" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.handlers.ValidateAndRun" command="_hXeLwKfPEeOn1O_4RKo5Bg"/>
+  <handlers xmi:id="_a1DMcLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.handler.install" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.InstallHandler" command="_YN3HwLxbEeO6cNJO7OpzPw"/>
   <bindingTables xmi:id="_z-9boKI6EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.bindingtable.dialogAndWindow" bindingContext="_a3mgMKI7EeOZB_p0_meNYQ">
     <bindings xmi:id="_z94AQKJrEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.keybinding.delete" keySequence="M1+R" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
   </bindingTables>
@@ -40,6 +43,7 @@
   <commands xmi:id="_hXeLwKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.command.validateandrun" commandName="Validate and run" description="Validates scheme and if no errors are present, processing is started"/>
   <commands xmi:id="_gmyxEKlhEeOpD8s0S7Qb7g" elementId="cz.martinbayer.e4.analyser.command.canvasitem.enable" commandName="Enable" description="Enable the processor so it can be used for processing"/>
   <commands xmi:id="_l7p88KlhEeOpD8s0S7Qb7g" elementId="cz.martinbayer.e4.analyser.command.canvasitem.disable" commandName="Disable" description="Disble the processor so it can not be used for processing"/>
+  <commands xmi:id="_YN3HwLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.command.install" commandName="Install processors"/>
   <addons xmi:id="_tgspoaI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_tgspoqI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_tgspo6I4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

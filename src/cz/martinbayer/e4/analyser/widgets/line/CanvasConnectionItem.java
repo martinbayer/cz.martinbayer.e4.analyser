@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
-import cz.martinbayer.e4.analyser.widgets.SWTUtils;
+import cz.martinbayer.utils.gui.SWTUtils;
 
 public class CanvasConnectionItem extends Composite implements Serializable,
 		ILine {
