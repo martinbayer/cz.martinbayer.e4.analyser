@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -47,6 +48,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	/**
 	 * 
 	 */
+	private final UUID PROCESSOR_ID;
 	public static final Point DEFAULT_SIZE = new Point(30, 30);
 	private static final long serialVersionUID = -2213613605192127483L;
 	private GridLayout itemLayout;
@@ -64,36 +66,47 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	private boolean taken = false;
 	private boolean hovered = false;
 	private Text text;
-	private IProcessorItemWrapper<IXMLog> item;
+	private IProcessorItemWrapper<IXMLog> processorItem;
+	private ProcessorPaletteItem origPaletteItem;
 
 	public CanvasProcessorItem(Composite parent, int style,
-			ProcessorPaletteItem selectedObject, EMenuService menuService,
-			IEclipseContext context) {
-		this(parent, style, selectedObject, menuService, context,
-				DEFAULT_SIZE.x, DEFAULT_SIZE.y);
-	}
-
-	private void initPopupMenu(EMenuService menuService) {
-		menuService.registerContextMenu(this,
-				ContextVariables.ITEM_POPUP_MENU_ID);
+			ProcessorPaletteItem origPaletteItem,
+			IProcessorItemWrapper<IXMLog> processorItem,
+			EMenuService menuService, IEclipseContext context, UUID processorId) {
+		this(parent, style, origPaletteItem, processorItem, menuService,
+				context, DEFAULT_SIZE.x, DEFAULT_SIZE.y, processorId);
 	}
 
 	public CanvasProcessorItem(Composite parent, int style,
-			ProcessorPaletteItem selectedObject, EMenuService menuService,
-			IEclipseContext context, int neededImageHeight, int neededImageWidth) {
+			ProcessorPaletteItem origPaletteItem,
+			IProcessorItemWrapper<IXMLog> processorItem,
+			EMenuService menuService, IEclipseContext context,
+			int neededImageHeight, int neededImageWidth, UUID processorId) {
 		super(parent, style | SWT.BORDER);
+		/* property value can be assigned only once */
+		PROCESSOR_ID = processorId != null ? processorId : UUID.randomUUID();
 		this.connectors = new ArrayList<>();
-		this.item = selectedObject.getItemWrapper().getInstance();
-		initProcessorListener(this.item);
+		this.origPaletteItem = origPaletteItem;
+		this.processorItem = processorItem;
+		initProcessorListener(this.processorItem);
 		this.imageSize = new Point(neededImageWidth, neededImageHeight);
-		this.image = selectedObject.getImage();
-		this.disabledImage = selectedObject.getDisabledImage();
+		this.image = origPaletteItem.getImage();
+		this.disabledImage = origPaletteItem.getDisabledImage();
 		this.context = context;
 		initPopupMenu(menuService);
 		checkImage(this.image);
 		initLayout();
 		initListeners();
 		setCursor(new Cursor(null, SWT.CURSOR_HAND));
+	}
+
+	private void initPopupMenu(EMenuService menuService) {
+		if (menuService == null) {
+			logger.error("No menu service provided. Context menu will not work");
+			return;
+		}
+		menuService.registerContextMenu(this,
+				ContextVariables.ITEM_POPUP_MENU_ID);
 	}
 
 	private void initProcessorListener(IProcessorItemWrapper<IXMLog> item) {
@@ -149,7 +162,8 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 					e.gc.fillRectangle(0, 0, getBounds().width,
 							getBounds().height);
 				}
-				if (item.getProcessorLogic().getProcessor().isEnabled()) {
+				if (processorItem.getProcessorLogic().getProcessor()
+						.isEnabled()) {
 					e.gc.drawImage(image.createImage(), 10, 10);
 				} else {
 					e.gc.drawImage(disabledImage.createImage(), 10, 10);
@@ -220,12 +234,11 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 			return false;
 		}
 		for (ItemConnectionConnector conn : this.connectors) {
-			CanvasProcessorItem source1 = conn.getConnection().getSourceItem();
-			CanvasProcessorItem destination1 = conn.getConnection()
+			IProcessorItem source1 = conn.getConnection().getSourceItem();
+			IProcessorItem destination1 = conn.getConnection()
 					.getDestinationItem();
-			CanvasProcessorItem source2 = connector.getConnection()
-					.getSourceItem();
-			CanvasProcessorItem destination2 = connector.getItem();
+			IProcessorItem source2 = connector.getConnection().getSourceItem();
+			IProcessorItem destination2 = connector.getItem();
 
 			// check that same processors are not already connected
 			if (CanvasConnectorUtils.areConnectionsSame(source1, destination1,
@@ -245,11 +258,12 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	 */
 	private boolean canBeSetForProcessor(ItemConnectionConnector connector) {
 		if (connector.getPart() == LinePart.START_SPOT) {
-			if (item.getProcessorLogic().getProcessor().canAddOutProc()) {
+			if (processorItem.getProcessorLogic().getProcessor()
+					.canAddOutProc()) {
 				return true;
 			}
 		} else if (connector.getPart() == LinePart.END_SPOT) {
-			if (item.getProcessorLogic().getProcessor().canAddInProc()) {
+			if (processorItem.getProcessorLogic().getProcessor().canAddInProc()) {
 				return true;
 			}
 		}
@@ -259,10 +273,12 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	private void udpateSrcAndDest(ItemConnectionConnector connector) {
 		// set source first
 		if (connector.getConnection().getSourceItem() == null) {
-			connector.getConnection().setSourceItem(connector.getItem());
+			connector.getConnection().setSourceItem(
+					(CanvasProcessorItem) connector.getItem());
 		} else if (connector.getConnection().getDestinationItem() == null) {
 			// set destination
-			connector.getConnection().setDestinationItem(connector.getItem());
+			connector.getConnection().setDestinationItem(
+					(CanvasProcessorItem) connector.getItem());
 		}
 	}
 
@@ -364,7 +380,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		DataBindingContext ctx = new DataBindingContext();
 		IObservableValue model = BeanProperties.value(LogProcessor.class,
 				LogProcessor.PROPERTY_NAME).observe(
-				this.item.getProcessorLogic().getProcessor());
+				this.processorItem.getProcessorLogic().getProcessor());
 		IObservableValue target = WidgetProperties.text(SWT.Modify).observe(
 				text);
 		ctx.bindValue(target, model);
@@ -382,7 +398,43 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 
 	@Override
 	public IProcessorItemWrapper<IXMLog> getItem() {
-		return item;
+		return processorItem;
+	}
+
+	@Override
+	public ProcessorPaletteItem getOrigPaletteItem() {
+		return origPaletteItem;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((PROCESSOR_ID == null) ? 0 : PROCESSOR_ID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CanvasProcessorItem other = (CanvasProcessorItem) obj;
+		if (PROCESSOR_ID == null) {
+			if (other.PROCESSOR_ID != null)
+				return false;
+		} else if (!PROCESSOR_ID.equals(other.PROCESSOR_ID))
+			return false;
+		return true;
+	}
+
+	@Override
+	public final UUID getItemId() {
+		return this.PROCESSOR_ID;
 	}
 
 }

@@ -21,6 +21,13 @@ public interface ICanvasManager {
 
 	boolean removeLine(ILine line);
 
+	/***
+	 * Processor is added only if same processor is not already contained and
+	 * True is returned. If it is contained, False is returned.
+	 * 
+	 * @param processor
+	 * @return
+	 */
 	boolean addProcessor(IProcessorItem processor);
 
 	boolean removeProcessor(IProcessorItem processor);

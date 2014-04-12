@@ -37,6 +37,7 @@ import cz.martinbayer.e4.analyser.canvas.utils.CanvasItemsLocator;
 import cz.martinbayer.e4.analyser.palette.ConnectionPaletteItem;
 import cz.martinbayer.e4.analyser.palette.PaletteItem;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
+import cz.martinbayer.e4.analyser.widgets.ICanvasItem;
 import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasItemDnDData;
 import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 import cz.martinbayer.utils.ImageUtils;
@@ -47,7 +48,6 @@ public class MainCanvas extends CanvasEventHandler {
 	private Logger logger = LoggerFactory.getInstance(getClass());
 
 	private CanvasMouseAdapter canvasMouseAdapter;
-	private EMenuService menuService;
 	private Composite canvasInnerComposite;
 
 	@PostConstruct
@@ -57,6 +57,8 @@ public class MainCanvas extends CanvasEventHandler {
 			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager,
 			org.eclipse.e4.core.services.log.Logger l) {
 		super.postConstruct(canvasManager);
+		application.getContext().set(ContextVariables.MAIN_CANVAS_COMPONENT,
+				this);
 		printPlugins();
 		this.menuService = menuService;
 		Composite mainComp = new Composite(parent, SWT.NONE);
@@ -149,6 +151,18 @@ public class MainCanvas extends CanvasEventHandler {
 				scrolledComposite.setCursor(null);
 			}
 		}
+	}
+
+	@Override
+	public boolean addItem(ICanvasItem item) {
+		boolean inserted = super.addItem(item);
+		if (inserted) {
+			this.scrolledComposite.setMinSize(canvasInnerComposite.computeSize(
+					SWT.DEFAULT, SWT.DEFAULT));
+			this.canvasMouseAdapter.initForDND(item);
+			return true;
+		}
+		return false;
 	}
 
 	private void initListeners(final Composite canvas) {

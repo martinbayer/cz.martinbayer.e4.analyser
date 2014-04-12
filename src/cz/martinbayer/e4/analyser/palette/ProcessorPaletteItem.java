@@ -1,5 +1,7 @@
 package cz.martinbayer.e4.analyser.palette;
 
+import java.io.Serializable;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
@@ -14,11 +16,15 @@ import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
  * @author Martin
  * 
  */
-public class ProcessorPaletteItem implements SubPaletteItem {
+public class ProcessorPaletteItem implements SubPaletteItem, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -301043338414674093L;
 	private IProcessorsPaletteItem item;
 	private IProcessorLogic<IXMLog> logic;
-	private RootPaletteItem parent;
+	private transient RootPaletteItem parent;
 	private IProcessorItemWrapper<IXMLog> itemWrapper;
 
 	public ProcessorPaletteItem(IProcessorItemWrapper<IXMLog> itemWrapper) {

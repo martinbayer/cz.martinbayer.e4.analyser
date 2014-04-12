@@ -5,7 +5,9 @@ import java.awt.geom.Line2D;
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.UUID;
 
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
@@ -19,6 +21,7 @@ import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
+import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.swt.utils.ColorUtils;
 import cz.martinbayer.utils.gui.SWTUtils;
 
@@ -29,6 +32,10 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	 * 
 	 */
 	private static final long serialVersionUID = 2706865167509467633L;
+
+	private final UUID CONNECTION_ID;
+
+	private Logger logger = LoggerFactory.getInstance(getClass());
 
 	/** correct */
 	private Region region;
@@ -115,8 +122,10 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	 *            styles can be added by this parameter
 	 */
 	public CanvasConnectionItem(Composite parent, int style,
-			MApplication application, EMenuService menuService) {
+			MApplication application, EMenuService menuService, UUID processorId) {
 		super(parent, style | SWT.TRANSPARENT);
+		this.CONNECTION_ID = processorId != null ? processorId : UUID
+				.randomUUID();
 		this.application = application;
 		initPopupMenu(menuService);
 		initListeners();
@@ -134,6 +143,10 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	}
 
 	private void initPopupMenu(EMenuService menuService) {
+		if (menuService == null) {
+			logger.error("No menu service provided. Context menu will not work");
+			return;
+		}
 		menuService.registerContextMenu(this,
 				ContextVariables.ITEM_POPUP_MENU_ID);
 	}
@@ -364,6 +377,24 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 		fixLocalPoints();
 	}
 
+	@Override
+	public final Point getStartPoint() {
+		return startPoint;
+	}
+
+	public final void setStartPoint(Point startPoint) {
+		this.startPoint = startPoint;
+	}
+
+	@Override
+	public final Point getEndPoint() {
+		return endPoint;
+	}
+
+	public final void setEndPoint(Point endPoint) {
+		this.endPoint = endPoint;
+	}
+
 	private void fixLocalPoints() {
 		if (startPoint != null && endPoint != null) {
 
@@ -577,5 +608,10 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 		setVisible(false);
 		lineHandler.itemDisposed();
 		return true;
+	}
+
+	@Override
+	public UUID getItemId() {
+		return this.CONNECTION_ID;
 	}
 }

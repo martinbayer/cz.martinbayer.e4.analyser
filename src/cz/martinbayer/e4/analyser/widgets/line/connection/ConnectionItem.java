@@ -1,8 +1,11 @@
 package cz.martinbayer.e4.analyser.widgets.line.connection;
 
+import java.util.UUID;
+
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.e4.analyser.LoggerFactory;
@@ -20,9 +23,9 @@ public class ConnectionItem extends CanvasConnectionItem {
 	 */
 	private static final long serialVersionUID = 5154122088790476947L;
 
-	public ConnectionItem(Composite parent, int style,
-			MApplication application, EMenuService menuService) {
-		super(parent, style, application, menuService);
+	public ConnectionItem(Composite parent, MApplication application,
+			EMenuService menuService, UUID connectionId) {
+		super(parent, SWT.NONE, application, menuService, connectionId);
 	}
 
 	public CanvasProcessorItem getSourceItem() {

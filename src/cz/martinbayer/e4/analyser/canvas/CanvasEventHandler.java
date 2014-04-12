@@ -213,7 +213,7 @@ public abstract class CanvasEventHandler implements ICanvas {
 			if ((connection = (ConnectionItem) application.getContext().get(
 					ContextVariables.CANVAS_CONNECTION_CREATING)) == null) {
 				connection = new ConnectionItem(getInnerCanvasComposite(),
-						SWT.NONE, application, menuService);
+						application, menuService, null);
 				if (hoveredItem.addConnection(new ItemConnectionConnector(
 						connection, hoveredItem, LinePart.START_SPOT))) {
 					connection.setStartPoint(xCoord, yCoord,
@@ -259,21 +259,31 @@ public abstract class CanvasEventHandler implements ICanvas {
 		}
 	}
 
-	public void addItem(ICanvasItem item) {
+	public boolean addItem(ICanvasItem item) {
+		boolean inserted = false;
 		if (item instanceof IProcessorItem) {
-			canvasManager.addProcessor((IProcessorItem) item);
+			inserted = canvasManager.addProcessor((IProcessorItem) item);
 		} else if (item instanceof ILine) {
-			canvasManager.addLine((ILine) item);
-			LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
-					.getSourceItem().getItem().getProcessorLogic()
-					.getProcessor();
-			LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
-					.getDestinationItem().getItem().getProcessorLogic()
-					.getProcessor();
-			sourceProcessor.addNextProcessor(destinationProcessor);
+			inserted = canvasManager.addLine((ILine) item);
+			if (inserted) {
+				LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
+						.getSourceItem().getItem().getProcessorLogic()
+						.getProcessor();
+				LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
+						.getDestinationItem().getItem().getProcessorLogic()
+						.getProcessor();
+				sourceProcessor.addNextProcessor(destinationProcessor);
+			}
 		} else {
 			logger.error("Unable to add item which is null or invalid type {}",
 					item);
+			inserted = false;
+		}
+		if (inserted) {
+			return true;
+		} else {
+			item.remove();
+			return false;
 		}
 	}
 

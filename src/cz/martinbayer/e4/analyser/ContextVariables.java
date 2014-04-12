@@ -36,4 +36,8 @@ public interface ContextVariables {
 
 	/* other IDs */
 	public static final String ITEM_POPUP_MENU_ID = "cz_martinbayer_e4_analyser_processor_popup_menu";
+
+	/* main canvas property */
+	public static final String MAIN_CANVAS_COMPONENT = "cz_martinbayer_e4_analyser_main_canvas";
+
 }

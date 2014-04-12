@@ -31,13 +31,6 @@ public class Activator implements BundleActivator {
 		LogService ls = (LogService) bundleContext.getService(logser);
 
 		for (Bundle b : bundles) {
-			if (b.getRegisteredServices() != null) {
-
-				for (ServiceReference<?> ref : b.getRegisteredServices()) {
-					String[] s = ref.getPropertyKeys();
-					System.out.println(s != null ? s.length : -1);
-				}
-			}
 			Class<?> clzz = null;
 			try {
 				clzz = b.loadClass("cz.martinbayer.analyser.processors.IProcessorItemWrapper");
@@ -51,7 +44,8 @@ public class Activator implements BundleActivator {
 					ls.log(LogService.LOG_INFO,
 							"Bundle started: " + b.getSymbolicName());
 				} catch (Exception e) {
-					ls.log(LogService.LOG_ERROR, "Unable to start bundle", e);
+					// ls.log(LogService.LOG_ERROR, "Unable to start bundle",
+					// e);
 				}
 			}
 		}

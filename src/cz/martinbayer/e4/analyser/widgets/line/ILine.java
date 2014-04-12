@@ -1,5 +1,6 @@
 package cz.martinbayer.e4.analyser.widgets.line;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 import cz.martinbayer.e4.analyser.widgets.ICanvasItem;
@@ -36,5 +37,9 @@ public interface ILine extends ICanvasItem {
 	void setStartPoint(int x, int y, Rectangle startAreaRect);
 
 	void setEndPoint(int x, int y, Rectangle endAreaRect);
+
+	Point getStartPoint();
+
+	Point getEndPoint();
 
 }

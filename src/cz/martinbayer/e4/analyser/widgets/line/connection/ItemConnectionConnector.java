@@ -1,16 +1,16 @@
 package cz.martinbayer.e4.analyser.widgets.line.connection;
 
 import cz.martinbayer.e4.analyser.widgets.line.LinePart;
-import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
+import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 
 public class ItemConnectionConnector {
 
 	private LinePart part;
-	private CanvasProcessorItem item;
+	private IProcessorItem item;
 	private ConnectionItem connection;
 
 	public ItemConnectionConnector(ConnectionItem connection,
-			CanvasProcessorItem item, LinePart part) {
+			IProcessorItem item, LinePart part) {
 		assert part != LinePart.LINE : "Only spot can be used as connector";
 		this.connection = connection;
 		this.item = item;
@@ -21,7 +21,7 @@ public class ItemConnectionConnector {
 		return part;
 	}
 
-	public CanvasProcessorItem getItem() {
+	public IProcessorItem getItem() {
 		return item;
 	}
 
@@ -32,5 +32,4 @@ public class ItemConnectionConnector {
 	public void move(int moveX, int moveY) {
 		connection.move(moveX, moveY, part);
 	}
-
 }

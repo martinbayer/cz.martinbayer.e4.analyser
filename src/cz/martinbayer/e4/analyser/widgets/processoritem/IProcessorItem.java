@@ -2,6 +2,7 @@ package cz.martinbayer.e4.analyser.widgets.processoritem;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
 import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 import cz.martinbayer.e4.analyser.widgets.ICanvasItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
 
@@ -16,4 +17,6 @@ public interface IProcessorItem extends ICanvasItem {
 	void setSelected(boolean selected);
 
 	void setHovered(boolean hovered);
+
+	ProcessorPaletteItem getOrigPaletteItem();
 }

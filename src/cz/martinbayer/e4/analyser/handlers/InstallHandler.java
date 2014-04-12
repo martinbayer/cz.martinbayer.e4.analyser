@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +19,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
@@ -55,10 +57,14 @@ public class InstallHandler {
 
 	@Execute
 	public void execute(final IProvisioningAgent agent, final Shell parent,
-			final UISynchronize sync, final IWorkbench workbench) {
+			final UISynchronize sync, final IWorkbench workbench,
+			@Optional @Named(value = "repositorylocation") String repoLoc) {
+		if (repoLoc == null) {
+			repoLoc = REPOSITORY_LOC;
+		}
 		InputDialog dialog = new InputDialog(parent,
 				"Insert repository location",
-				"Insert the value for repository location", "", null);
+				"Insert the value for repository location", repoLoc, null);
 		dialog.create();
 		int status = dialog.open();
 		String value = dialog.getValue();
@@ -114,28 +120,17 @@ public class InstallHandler {
 					final InstallOperation installOperation = new InstallOperation(
 							session, processors);
 
-					// final UpdateOperation updateOperation = new
-					// UpdateOperation(
-					// session, processors);
-
 					// set location of artifact and metadata repo
 					installOperation.getProvisioningContext()
 							.setArtifactRepositories(new URI[] { uri });
 					installOperation.getProvisioningContext()
 							.setMetadataRepositories(new URI[] { uri });
-					// set location of artifact and metadata repo
-					// updateOperation.getProvisioningContext()
-					// .setArtifactRepositories(new URI[] { uri });
-					// updateOperation.getProvisioningContext()
-					// .setMetadataRepositories(new URI[] { uri });
 
 					/* 2. check for updates */
 
 					// run update checks causing I/O
 					final IStatus installStatus = installOperation
 							.resolveModal(monitor);
-					// final IStatus updateStatus = updateOperation
-					// .resolveModal(monitor);
 
 					// failed to find updates (inform user and exit)
 					if (installStatus.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) {
@@ -143,8 +138,8 @@ public class InstallHandler {
 							@Override
 							public void run() {
 								MessageDialog
-										.openWarning(parent, "No update",
-												"No updates for the current installation have been found");
+										.openWarning(parent, "No updates",
+												"No processors to install nor update found");
 							}
 						});
 						return Status.CANCEL_STATUS;
@@ -156,13 +151,14 @@ public class InstallHandler {
 					 */
 
 					// found updates, ask user if to install?
-					if ((installStatus.isOK() && installStatus.getSeverity() != IStatus.ERROR)) {
+					if ((installStatus.getSeverity() != IStatus.ERROR)) {
 						sync.syncExec(new Runnable() {
 							@Override
 							public void run() {
 								doInstall = MessageDialog
-										.openQuestion(parent,
-												"Really install updates?",
+										.openQuestion(
+												parent,
+												"Really install new processors?",
 												installOperation
 														.getResolutionDetails());
 							}
@@ -178,13 +174,7 @@ public class InstallHandler {
 									.println("Running update from within Eclipse IDE? This won't work!!!");
 							throw new NullPointerException();
 						}
-						// final ProvisioningJob updateProvisioningJob =
-						// updateOperation
-						// .getProvisioningJob(monitor);
-						// updates cannot run from within Eclipse IDE!!!
-						// if (updateProvisioningJob == null) {
-						// logger.warn("no updates found");
-						// }
+
 						JobChangeAdapter adapter = new JobChangeAdapter() {
 							@Override
 							public void done(IJobChangeEvent event) {
@@ -196,8 +186,8 @@ public class InstallHandler {
 											boolean restart = MessageDialog
 													.openQuestion(
 															parent,
-															"Updates installed, restart?",
-															"Updates have been installed successfully, do you want to restart?");
+															"New processors installed and updated.",
+															"Application needs to be restarted, do you want to restart?");
 											if (restart) {
 												workbench.restart();
 											}
@@ -212,10 +202,6 @@ public class InstallHandler {
 						// installation progress and notify user upon success
 						installProvisioningJob.addJobChangeListener(adapter);
 						installProvisioningJob.schedule();
-						// if (updateProvisioningJob != null) {
-						// updateProvisioningJob.addJobChangeListener(adapter);
-						// updateProvisioningJob.schedule();
-						// }
 					}
 				} catch (ProvisionException e1) {
 					// TODO Auto-generated catch block

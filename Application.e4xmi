@@ -18,8 +18,20 @@
         </children>
       </children>
     </children>
+    <handlers xmi:id="_a1DMcLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.handler.install" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.InstallHandler" command="_YN3HwLxbEeO6cNJO7OpzPw"/>
+    <handlers xmi:id="_m85x0L9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handler.newproject" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.NewProjectHandler" command="_WB8skL9KEeOLj4ucNbmHdw"/>
+    <handlers xmi:id="_sgJ_AL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handler.saveasproject" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.SaveAsProjectHandler" command="_IthpIL9KEeOLj4ucNbmHdw"/>
+    <handlers xmi:id="_u-uTML9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handler.saveproject" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.SaveProjectHandler" command="_M47SkL9KEeOLj4ucNbmHdw"/>
     <mainMenu xmi:id="_l_W34KMkEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.menu.0">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_hd36kLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.install" label="Install processors" command="_YN3HwLxbEeO6cNJO7OpzPw"/>
+      <children xsi:type="menu:Menu" xmi:id="_Q9eQ4L6sEeOF_O0gnE_MCg" elementId="cz.martinbayer.e4.analyser.menu.project" label="Project">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_x2z6oL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.newproject" label="New project" command="_WB8skL9KEeOLj4ucNbmHdw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_z25jEL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.openproject" label="Open" command="_fQAXkL9KEeOLj4ucNbmHdw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_5ddi8L9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.saveas" label="Save As..." command="_IthpIL9KEeOLj4ucNbmHdw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_8EFm8L9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.save" label="Save" command="_M47SkL9KEeOLj4ucNbmHdw"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_49itAL6rEeOF_O0gnE_MCg" elementId="cz.martinbayer.e4.analyser.menu.help" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hd36kLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.handledmenuitem.install" label="Install processors" command="_YN3HwLxbEeO6cNJO7OpzPw"/>
+      </children>
     </mainMenu>
     <trimBars xmi:id="_k2S3o6ZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.trimbar.0">
       <children xsi:type="menu:ToolBar" xmi:id="_l3a9cKZREeOuhonBQyr_Wg" elementId="cz.martinbayer.e4.analyser.toolbar.0">
@@ -31,9 +43,10 @@
     </trimBars>
   </children>
   <handlers xmi:id="_f2uxwKfPEeOn1O_4RKo5Bg" elementId="cz.martinbayer.e4.analyser.handler.validateandrun" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.canvas.handlers.ValidateAndRun" command="_hXeLwKfPEeOn1O_4RKo5Bg"/>
-  <handlers xmi:id="_a1DMcLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.handler.install" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.InstallHandler" command="_YN3HwLxbEeO6cNJO7OpzPw"/>
+  <handlers xmi:id="_qOtg0L9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.handler.openproject" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.handlers.OpenProjectHandler" command="_fQAXkL9KEeOLj4ucNbmHdw"/>
   <bindingTables xmi:id="_z-9boKI6EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.bindingtable.dialogAndWindow" bindingContext="_a3mgMKI7EeOZB_p0_meNYQ">
     <bindings xmi:id="_z94AQKJrEeOH1q2A_EZbWQ" elementId="cz.martinbayer.e4.analyser.keybinding.delete" keySequence="M1+R" command="_zB-EcKPmEeOQsrsMDFxKhw"/>
+    <bindings xmi:id="_LDPzQL9eEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.keybinding.0" keySequence="M1+S" command="_M47SkL9KEeOLj4ucNbmHdw"/>
   </bindingTables>
   <rootContext xmi:id="_a3mgMKI7EeOZB_p0_meNYQ" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_45m7QKI7EeOZB_p0_meNYQ" elementId="org.eclipse.ui.contexts.windows" name="In Windows"/>
@@ -44,6 +57,10 @@
   <commands xmi:id="_gmyxEKlhEeOpD8s0S7Qb7g" elementId="cz.martinbayer.e4.analyser.command.canvasitem.enable" commandName="Enable" description="Enable the processor so it can be used for processing"/>
   <commands xmi:id="_l7p88KlhEeOpD8s0S7Qb7g" elementId="cz.martinbayer.e4.analyser.command.canvasitem.disable" commandName="Disable" description="Disble the processor so it can not be used for processing"/>
   <commands xmi:id="_YN3HwLxbEeO6cNJO7OpzPw" elementId="cz.martinbayer.e4.analyser.command.install" commandName="Install processors"/>
+  <commands xmi:id="_IthpIL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.command.saveasproject" commandName="Save As" description="Save the project to some location"/>
+  <commands xmi:id="_M47SkL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.command.saveproject" commandName="Save" description="Save the project to actual location. If none location is specified, file diaog is opened."/>
+  <commands xmi:id="_WB8skL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.command.newproject" commandName="New project" description="Create new project"/>
+  <commands xmi:id="_fQAXkL9KEeOLj4ucNbmHdw" elementId="cz.martinbayer.e4.analyser.command.openproject" commandName="Open project" description="Open previously saved project"/>
   <addons xmi:id="_tgspoaI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_tgspoqI4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_tgspo6I4EeOZB_p0_meNYQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

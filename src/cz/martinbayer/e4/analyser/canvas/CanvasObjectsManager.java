@@ -108,6 +108,8 @@ public class CanvasObjectsManager implements ICanvasManager {
 	public boolean addProcessor(IProcessorItem processor) {
 		if (!this.processors.contains(processor)) {
 			this.processors.add(processor);
+			this.procNames.add(processor.getItem().getProcessorLogic()
+					.getProcessor().getName());
 			if (!procTypes.containsKey(processor.getItem().getProcessorLogic()
 					.getProcessor().getClass())) {
 				procTypes.put(processor.getItem().getProcessorLogic()
@@ -161,15 +163,12 @@ public class CanvasObjectsManager implements ICanvasManager {
 		sbName.append(procItem.getItem().getProcessorPaletteItem().getLabel());
 		sbName.append("_");
 		AtomicInteger index = new AtomicInteger();
-		boolean named = false;
-		while (!named) {
+		while (true) {
 			String name = new StringBuffer(sbName).append(
 					String.valueOf(index.incrementAndGet())).toString();
-			if (procNames.add(name)) {
-				named = true;
+			if (!procNames.contains(name)) {
 				return name;
 			}
 		}
-		return null;
 	}
 }
