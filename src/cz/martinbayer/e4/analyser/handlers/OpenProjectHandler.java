@@ -9,12 +9,14 @@ import java.io.ObjectStreamClass;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.inject.Named;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.internal.contexts.EclipseContext;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.osgi.framework.Bundle;
@@ -29,7 +31,6 @@ import cz.martinbayer.e4.analyser.widgets.line.LinePart;
 import cz.martinbayer.e4.analyser.widgets.line.SerializableCanvasConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
-import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 import cz.martinbayer.e4.analyser.widgets.processoritem.SerializableCanvasProcessorItem;
 
@@ -41,6 +42,12 @@ public class OpenProjectHandler {
 			EMenuService menuService,
 			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager)
 			throws ClassNotFoundException {
+		for (Entry<String, Object> entry : ((EclipseContext) eclipseContext)
+				.localData().entrySet()) {
+			System.out.println(String.format("%s: %s", entry.getKey(),
+					String.valueOf(entry.getValue())));
+		}
+		System.out.println(eclipseContext);
 		List<Bundle> bundles = ProcessorsPool.getInstance().getProcBundles();
 		List<IProcessorItem> processors = null;
 		File file = new File("c:\\out.obj");
@@ -61,7 +68,8 @@ public class OpenProjectHandler {
 								.getProcessorItem().getProcessorLogic()
 								.getProcessor().getName(),
 						item.getProcessorId());
-
+				item.getProcessorItem().getProcessorLogic().getProcessor()
+						.init();
 				mainCanvas.addItem(canvItem);
 			}
 
@@ -100,12 +108,10 @@ public class OpenProjectHandler {
 			if (item.getSourceId().equals(processor.getItemId())) {
 				processor.addConnection(new ItemConnectionConnector(connection,
 						processor, LinePart.START_SPOT));
-				connection.setSourceItem((CanvasProcessorItem) processor);
 
 			} else if (item.getDestinationId().equals(processor.getItemId())) {
 				processor.addConnection(new ItemConnectionConnector(connection,
 						processor, LinePart.END_SPOT));
-				connection.setDestinationItem((CanvasProcessorItem) processor);
 			}
 		}
 	}

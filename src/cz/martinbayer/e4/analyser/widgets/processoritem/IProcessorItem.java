@@ -19,4 +19,8 @@ public interface IProcessorItem extends ICanvasItem {
 	void setHovered(boolean hovered);
 
 	ProcessorPaletteItem getOrigPaletteItem();
+
+	void setItemEnabled(boolean itemEnabled);
+
+	boolean isItemEnabled();
 }

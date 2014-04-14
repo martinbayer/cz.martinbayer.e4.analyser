@@ -1,4 +1,4 @@
-package cz.martinbayer.e4.analyser.widgets.processoritem.actions;
+package cz.martinbayer.e4.analyser.canvas.handlers;
 
 import javax.inject.Named;
 

@@ -14,17 +14,21 @@ public class StatusInfo {
 		return statusMessage;
 	}
 
-	public final void setStatusMessage(String statusMessage) {
+	public final StatusInfo setStatusMessage(String statusMessage) {
 		this.statusMessage = statusMessage;
+		return this;
 	}
 
-	public final void setStatusMessage(String statusMessage, boolean doNotClean) {
+	public final StatusInfo setStatusMessage(String statusMessage,
+			boolean doNotClean) {
 		this.statusMessage = statusMessage;
 		this.doNotClean = doNotClean;
+		return this;
 	}
 
-	public final void setStatusMessage(String format, Object... args) {
+	public final StatusInfo setStatusMessage(String format, Object... args) {
 		this.statusMessage = String.format(parseFormat(format, args), args);
+		return this;
 	}
 
 	public final boolean isDoNotClean() {

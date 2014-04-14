@@ -1,4 +1,4 @@
-package cz.martinbayer.e4.analyser.widgets.processoritem.actions;
+package cz.martinbayer.e4.analyser.canvas.handlers;
 
 import javax.inject.Named;
 
@@ -12,7 +12,7 @@ import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
 import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 
-public class EnableItem {
+public class DisableItem {
 	private Logger logger = LoggerFactory.getInstance(getClass());
 
 	@Execute
@@ -20,14 +20,14 @@ public class EnableItem {
 			@Optional @Named(value = ContextVariables.CANVAS_PROCESSOR_SELECTED) CanvasEvent<IProcessorItem> processorEvent) {
 		if (processorEvent != null && processorEvent.getItem() != null) {
 			processorEvent.getItem().getItem().getProcessorLogic()
-					.getProcessor().setEnabled(true);
+					.getProcessor().setEnabled(false);
 		} else {
-			logger.debug("No processor selected to be enabled");
+			logger.debug("No processor selected to be disabled");
 		}
 	}
 
 	/**
-	 * Allow the action if the item is disabled
+	 * Allow the action if the item is enabled
 	 * 
 	 * @param processorEvent
 	 * @return
@@ -38,7 +38,7 @@ public class EnableItem {
 		if (processorEvent != null && processorEvent.getItem() != null) {
 			boolean enabled = processorEvent.getItem().getItem()
 					.getProcessorLogic().getProcessor().isEnabled();
-			return !enabled;
+			return enabled;
 		}
 		return false;
 	}

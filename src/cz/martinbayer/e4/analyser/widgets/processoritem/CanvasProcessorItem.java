@@ -272,10 +272,12 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 
 	private void udpateSrcAndDest(ItemConnectionConnector connector) {
 		// set source first
-		if (connector.getConnection().getSourceItem() == null) {
+		if (connector.getConnection().getSourceItem() == null
+				&& connector.getPart() == LinePart.START_SPOT) {
 			connector.getConnection().setSourceItem(
 					(CanvasProcessorItem) connector.getItem());
-		} else if (connector.getConnection().getDestinationItem() == null) {
+		} else if (connector.getConnection().getDestinationItem() == null
+				&& connector.getPart() == LinePart.END_SPOT) {
 			// set destination
 			connector.getConnection().setDestinationItem(
 					(CanvasProcessorItem) connector.getItem());
@@ -437,4 +439,35 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		return this.PROCESSOR_ID;
 	}
 
+	@Override
+	public void reinitMenu(EMenuService menuService) {
+		initPopupMenu(menuService);
+	}
+
+	@Override
+	public void setItemEnabled(boolean itemEnabled) {
+		getItem().getProcessorLogic().getProcessor().setEnabled(itemEnabled);
+	}
+
+	@Override
+	public boolean isItemEnabled() {
+		return getItem().getProcessorLogic().getProcessor().isEnabled();
+	}
+
+	/**
+	 * Get the collection of log processors instances from the items placed on
+	 * the canvas
+	 * 
+	 * @param enabledInputProcs
+	 *            - processor items placed on canvas
+	 * @return - LogProcessor instances used by canvas items
+	 */
+	public static List<LogProcessor<IXMLog>> getProcessors(
+			List<IProcessorItem> enabledInputProcs) {
+		List<LogProcessor<IXMLog>> procs = new ArrayList<>();
+		for (IProcessorItem item : enabledInputProcs) {
+			procs.add(item.getItem().getProcessorLogic().getProcessor());
+		}
+		return procs;
+	}
 }

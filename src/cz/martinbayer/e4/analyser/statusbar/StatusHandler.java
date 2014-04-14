@@ -12,6 +12,9 @@ public class StatusHandler {
 	private static StatusHandler instance;
 
 	public static final void setStatus(StatusInfo status) {
+		if (instance == null) {
+			getInstance();
+		}
 		broker.send(ContextVariables.APP_STATUS, status);
 	}
 

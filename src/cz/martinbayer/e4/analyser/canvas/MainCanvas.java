@@ -160,6 +160,7 @@ public class MainCanvas extends CanvasEventHandler {
 			this.scrolledComposite.setMinSize(canvasInnerComposite.computeSize(
 					SWT.DEFAULT, SWT.DEFAULT));
 			this.canvasMouseAdapter.initForDND(item);
+			item.reinitMenu(menuService);
 			return true;
 		}
 		return false;

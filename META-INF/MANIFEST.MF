@@ -12,6 +12,7 @@ Export-Package: cz.martinbayer.e4.analyser,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Import-Package: cz.martinbayer.analyser.processors,
+ cz.martinbayer.analyser.processors.exception,
  cz.martinbayer.analyser.processors.model,
  cz.martinbayer.analyser.processors.types,
  cz.martinbayer.analyser.processorsPool,

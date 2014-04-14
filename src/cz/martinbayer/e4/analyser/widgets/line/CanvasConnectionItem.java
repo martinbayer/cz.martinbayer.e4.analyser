@@ -614,4 +614,9 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	public UUID getItemId() {
 		return this.CONNECTION_ID;
 	}
+
+	@Override
+	public void reinitMenu(EMenuService menuService) {
+		initPopupMenu(menuService);
+	}
 }
