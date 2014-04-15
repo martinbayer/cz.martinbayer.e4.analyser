@@ -16,6 +16,6 @@ public class ErrorDialogUtil {
 				"Check details for more information about error",
 				new Status(Severity.ERROR.getValue(), FrameworkUtil.getBundle(
 						ErrorDialogUtil.class).getSymbolicName(),
-						"Exception thrown", exception));
+						"Exception thrown", exception.getCause()));
 	}
 }

@@ -115,4 +115,12 @@ public class ConnectionItem extends CanvasConnectionItem {
 		}
 		return super.remove();
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Connection Item [%s->%s]", getSourceItem()
+				.getItem().getProcessorLogic().getProcessor().getName(),
+				getDestinationItem().getItem().getProcessorLogic()
+						.getProcessor().getName());
+	}
 }

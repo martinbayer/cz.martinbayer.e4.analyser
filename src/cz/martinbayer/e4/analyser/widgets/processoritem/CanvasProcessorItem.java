@@ -470,4 +470,10 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 		}
 		return procs;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Canvas processor item [%s]", getItem()
+				.getProcessorLogic().getProcessor().getName());
+	}
 }

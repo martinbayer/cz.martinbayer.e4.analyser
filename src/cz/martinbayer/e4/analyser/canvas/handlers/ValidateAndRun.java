@@ -8,7 +8,6 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
@@ -32,9 +31,6 @@ public class ValidateAndRun {
 	@Named(IServiceConstants.ACTIVE_SHELL)
 	private Shell shell;
 
-	@Inject
-	EMenuService serv;
-
 	@Execute
 	public void execute(
 			@Optional @Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager manager) {
@@ -42,12 +38,19 @@ public class ValidateAndRun {
 		ValidationStatus validationResult;
 		validationResult = ScenarioValidator.validateInputProcessors(manager);
 		if (!checkValidity(validationResult)) {
+			StatusHandler.setStatus(new StatusInfo()
+					.setStatusMessage(validationResult.getMessage()));
 			return;
 		}
 		IProcessorItem inputProcessor = manager.getInputProcessors().get(0);
 		validationResult = ScenarioValidator
 				.validateEnabledProcessors(inputProcessor.getItem()
 						.getProcessorLogic().getProcessor());
+		if (!checkValidity(validationResult)) {
+			StatusHandler.setStatus(new StatusInfo()
+					.setStatusMessage(validationResult.getMessage()));
+			return;
+		}
 		InputProcessor<IXMLog> processor = (InputProcessor<IXMLog>) manager
 				.getInputProcessors().get(0).getItem().getProcessorLogic()
 				.getProcessor();

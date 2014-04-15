@@ -47,8 +47,8 @@ public class ScenarioValidator {
 	public static ValidationStatus validateEnabledProcessors(
 			LogProcessor<IXMLog> processor) {
 		StringBuffer sb = processor.isValid();
-		if (sb == null) {
-			for (LogProcessor<IXMLog> proc : processor.getNextProcessors()) {
+		if (sb == null || sb.length() == 0) {
+			for (LogProcessor<IXMLog> proc : processor.getEnabledProcs()) {
 				validateEnabledProcessors(proc);
 			}
 			return new ValidationStatus(true, String.format(
