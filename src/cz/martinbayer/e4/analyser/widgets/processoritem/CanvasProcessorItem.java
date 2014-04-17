@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
@@ -60,18 +60,18 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	private IEclipseContext context;
 	private final Color hoveredDefaultColor = ColorUtils
 			.getColor(SWT.COLOR_BLACK), selectedDefaultColor = ColorUtils
-			.getColor(SWT.COLOR_DARK_GRAY), takenDefaultColor = ColorUtils
+			.getColor(SWT.COLOR_GRAY), takenDefaultColor = ColorUtils
 			.getColor(SWT.COLOR_BLUE);
 	private boolean selected = false;
 	private boolean taken = false;
 	private boolean hovered = false;
 	private Text text;
-	private IProcessorItemWrapper<IXMLog> processorItem;
+	private IProcessorItemWrapper<IE4LogsisLog> processorItem;
 	private ProcessorPaletteItem origPaletteItem;
 
 	public CanvasProcessorItem(Composite parent, int style,
 			ProcessorPaletteItem origPaletteItem,
-			IProcessorItemWrapper<IXMLog> processorItem,
+			IProcessorItemWrapper<IE4LogsisLog> processorItem,
 			EMenuService menuService, IEclipseContext context, UUID processorId) {
 		this(parent, style, origPaletteItem, processorItem, menuService,
 				context, DEFAULT_SIZE.x, DEFAULT_SIZE.y, processorId);
@@ -79,7 +79,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 
 	public CanvasProcessorItem(Composite parent, int style,
 			ProcessorPaletteItem origPaletteItem,
-			IProcessorItemWrapper<IXMLog> processorItem,
+			IProcessorItemWrapper<IE4LogsisLog> processorItem,
 			EMenuService menuService, IEclipseContext context,
 			int neededImageHeight, int neededImageWidth, UUID processorId) {
 		super(parent, style | SWT.BORDER);
@@ -109,7 +109,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 				ContextVariables.ITEM_POPUP_MENU_ID);
 	}
 
-	private void initProcessorListener(IProcessorItemWrapper<IXMLog> item) {
+	private void initProcessorListener(IProcessorItemWrapper<IE4LogsisLog> item) {
 		item.getProcessorLogic()
 				.getProcessor()
 				.addPropertyChangeListener(LogProcessor.PROPERTY_ENABLED,
@@ -399,7 +399,7 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	}
 
 	@Override
-	public IProcessorItemWrapper<IXMLog> getItem() {
+	public IProcessorItemWrapper<IE4LogsisLog> getItem() {
 		return processorItem;
 	}
 
@@ -462,9 +462,9 @@ public class CanvasProcessorItem extends Composite implements Serializable,
 	 *            - processor items placed on canvas
 	 * @return - LogProcessor instances used by canvas items
 	 */
-	public static List<LogProcessor<IXMLog>> getProcessors(
+	public static List<LogProcessor<IE4LogsisLog>> getProcessors(
 			List<IProcessorItem> enabledInputProcs) {
-		List<LogProcessor<IXMLog>> procs = new ArrayList<>();
+		List<LogProcessor<IE4LogsisLog>> procs = new ArrayList<>();
 		for (IProcessorItem item : enabledInputProcs) {
 			procs.add(item.getItem().getProcessorLogic().getProcessor());
 		}

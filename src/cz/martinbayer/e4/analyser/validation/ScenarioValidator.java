@@ -3,7 +3,7 @@ package cz.martinbayer.e4.analyser.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
 import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
@@ -45,11 +45,15 @@ public class ScenarioValidator {
 	}
 
 	public static ValidationStatus validateEnabledProcessors(
-			LogProcessor<IXMLog> processor) {
+			LogProcessor<IE4LogsisLog> processor) {
 		StringBuffer sb = processor.isValid();
 		if (sb == null || sb.length() == 0) {
-			for (LogProcessor<IXMLog> proc : processor.getEnabledProcs()) {
-				validateEnabledProcessors(proc);
+			ValidationStatus childProcsStatus;
+			for (LogProcessor<IE4LogsisLog> proc : processor.getEnabledProcs()) {
+				childProcsStatus = validateEnabledProcessors(proc);
+				if (!childProcsStatus.isValid()) {
+					return childProcsStatus;
+				}
 			}
 			return new ValidationStatus(true, String.format(
 					"Processor %s is valid", processor.getName()));

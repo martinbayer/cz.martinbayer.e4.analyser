@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.eclipse.swt.graphics.Point;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.e4.analyser.palette.ProcessorPaletteItem;
 
 public class SerializableCanvasProcessorItem implements Serializable {
@@ -17,7 +17,7 @@ public class SerializableCanvasProcessorItem implements Serializable {
 
 	private ProcessorPaletteItem origPaletteItem;
 
-	private IProcessorItemWrapper<IXMLog> processorItem;
+	private IProcessorItemWrapper<IE4LogsisLog> processorItem;
 
 	private Point location;
 
@@ -28,22 +28,22 @@ public class SerializableCanvasProcessorItem implements Serializable {
 		this.processorItem = item.getItem();
 		this.location = ((CanvasProcessorItem) item).getLocation();
 		this.processorId = item.getItemId();
-		resetData(item);
 	}
 
-	private void resetData(IProcessorItem item) {
+	public void resetData() {
 		/*
 		 * remove processors because they are recreated during deserialization
 		 * so duplicates would occur
 		 */
-		item.getItem().getProcessorLogic().getProcessor().removeProcessor(null);
+		this.processorItem.getProcessorLogic().getProcessor()
+				.removeProcessor(null);
 	}
 
 	public final ProcessorPaletteItem getOrigPaletteItem() {
 		return origPaletteItem;
 	}
 
-	public final IProcessorItemWrapper<IXMLog> getProcessorItem() {
+	public final IProcessorItemWrapper<IE4LogsisLog> getProcessorItem() {
 		return processorItem;
 	}
 

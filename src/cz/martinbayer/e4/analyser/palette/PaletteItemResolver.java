@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.helper.ProcessorTypeResolver;
 
@@ -18,11 +18,11 @@ public class PaletteItemResolver {
 	 * @return
 	 */
 	public static List<RootPaletteItem> resolveProcessors(
-			List<IProcessorItemWrapper<IXMLog>> processors) {
+			List<IProcessorItemWrapper<IE4LogsisLog>> processors) {
 		HashMap<String, RootPaletteItem> roots = new HashMap<>();
-		LogProcessor<IXMLog> proc = null;
+		LogProcessor<IE4LogsisLog> proc = null;
 		String procTypeName = null;
-		for (IProcessorItemWrapper<IXMLog> processor : processors) {
+		for (IProcessorItemWrapper<IE4LogsisLog> processor : processors) {
 			proc = processor.getProcessorLogic().getProcessor();
 			procTypeName = ProcessorTypeResolver.getLabel(proc);
 			if (!roots.containsKey(procTypeName)) {

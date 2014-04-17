@@ -7,7 +7,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
 import cz.martinbayer.analyser.processors.IProcessorLogic;
 import cz.martinbayer.analyser.processors.IProcessorsPaletteItem;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.e4.analyser.widgets.processoritem.CanvasProcessorItem;
 
 /**
@@ -23,11 +23,11 @@ public class ProcessorPaletteItem implements SubPaletteItem, Serializable {
 	 */
 	private static final long serialVersionUID = -301043338414674093L;
 	private IProcessorsPaletteItem item;
-	private IProcessorLogic<IXMLog> logic;
+	private IProcessorLogic<IE4LogsisLog> logic;
 	private transient RootPaletteItem parent;
-	private IProcessorItemWrapper<IXMLog> itemWrapper;
+	private IProcessorItemWrapper<IE4LogsisLog> itemWrapper;
 
-	public ProcessorPaletteItem(IProcessorItemWrapper<IXMLog> itemWrapper) {
+	public ProcessorPaletteItem(IProcessorItemWrapper<IE4LogsisLog> itemWrapper) {
 		this.itemWrapper = itemWrapper;
 		this.item = itemWrapper.getProcessorPaletteItem();
 		this.logic = itemWrapper.getProcessorLogic();
@@ -59,11 +59,11 @@ public class ProcessorPaletteItem implements SubPaletteItem, Serializable {
 		this.item = item;
 	}
 
-	public IProcessorLogic<IXMLog> getLogic() {
+	public IProcessorLogic<IE4LogsisLog> getLogic() {
 		return logic;
 	}
 
-	public void setLogic(IProcessorLogic<IXMLog> logic) {
+	public void setLogic(IProcessorLogic<IE4LogsisLog> logic) {
 		this.logic = logic;
 	}
 
@@ -76,7 +76,7 @@ public class ProcessorPaletteItem implements SubPaletteItem, Serializable {
 		return parent;
 	}
 
-	public IProcessorItemWrapper<IXMLog> getItemWrapper() {
+	public IProcessorItemWrapper<IE4LogsisLog> getItemWrapper() {
 		return itemWrapper;
 	}
 }

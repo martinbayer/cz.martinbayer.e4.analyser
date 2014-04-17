@@ -13,7 +13,7 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.LogProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
@@ -182,10 +182,10 @@ public abstract class CanvasEventHandler implements ICanvas {
 		if (canvasEvent != null && (item = canvasEvent.getItem()) != null) {
 			if (item instanceof ILine) {
 				// remove proper processor instances
-				LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
+				LogProcessor<IE4LogsisLog> sourceProcessor = ((ConnectionItem) item)
 						.getSourceItem().getItem().getProcessorLogic()
 						.getProcessor();
-				LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
+				LogProcessor<IE4LogsisLog> destinationProcessor = ((ConnectionItem) item)
 						.getDestinationItem().getItem().getProcessorLogic()
 						.getProcessor();
 				if (!sourceProcessor.removeProcessor(destinationProcessor)) {
@@ -266,10 +266,10 @@ public abstract class CanvasEventHandler implements ICanvas {
 		} else if (item instanceof ILine) {
 			inserted = canvasManager.addLine((ILine) item);
 			if (inserted) {
-				LogProcessor<IXMLog> sourceProcessor = ((ConnectionItem) item)
+				LogProcessor<IE4LogsisLog> sourceProcessor = ((ConnectionItem) item)
 						.getSourceItem().getItem().getProcessorLogic()
 						.getProcessor();
-				LogProcessor<IXMLog> destinationProcessor = ((ConnectionItem) item)
+				LogProcessor<IE4LogsisLog> destinationProcessor = ((ConnectionItem) item)
 						.getDestinationItem().getItem().getProcessorLogic()
 						.getProcessor();
 				sourceProcessor.addNextProcessor(destinationProcessor);

@@ -12,7 +12,7 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.InputProcessor;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
@@ -34,7 +34,6 @@ public class ValidateAndRun {
 	@Execute
 	public void execute(
 			@Optional @Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager manager) {
-
 		ValidationStatus validationResult;
 		validationResult = ScenarioValidator.validateInputProcessors(manager);
 		if (!checkValidity(validationResult)) {
@@ -51,14 +50,14 @@ public class ValidateAndRun {
 					.setStatusMessage(validationResult.getMessage()));
 			return;
 		}
-		InputProcessor<IXMLog> processor = (InputProcessor<IXMLog>) manager
+		InputProcessor<IE4LogsisLog> processor = (InputProcessor<IE4LogsisLog>) manager
 				.getInputProcessors().get(0).getItem().getProcessorLogic()
 				.getProcessor();
 		try {
 			processor.run();
 		} catch (ProcessorFailedException e) {
 			ErrorDialogUtil.showErrorDialog(shell, e);
-			logger.error("Error ocured during processing", e);
+			logger.error(e, "Error ocured during processing");
 		}
 
 	}

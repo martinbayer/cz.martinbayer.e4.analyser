@@ -21,6 +21,7 @@ import org.eclipse.e4.ui.services.EMenuService;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
+import cz.martinbayer.e4.analyser.serialization.SerialClone;
 import cz.martinbayer.e4.analyser.widgets.line.ILine;
 import cz.martinbayer.e4.analyser.widgets.line.SerializableCanvasConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
@@ -92,8 +93,11 @@ public class SaveProjectHandler {
 		if (processors != null) {
 			ArrayList<SerializableCanvasProcessorItem> serializableProcessors = new ArrayList<>();
 			for (IProcessorItem processor : processors) {
-				serializableProcessors.add(new SerializableCanvasProcessorItem(
-						processor));
+				SerializableCanvasProcessorItem serializableProcItem = new SerializableCanvasProcessorItem(
+						processor);
+				serializableProcItem = SerialClone.clone(serializableProcItem);
+				serializableProcItem.resetData();
+				serializableProcessors.add(serializableProcItem);
 			}
 			return serializableProcessors;
 		}

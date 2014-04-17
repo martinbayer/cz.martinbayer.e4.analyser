@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
@@ -70,7 +70,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 
 	public static final CanvasProcessorItem createItem(Composite innerCanvas,
 			ProcessorPaletteItem origPaletteItem,
-			IProcessorItemWrapper<IXMLog> processorItem,
+			IProcessorItemWrapper<IE4LogsisLog> processorItem,
 			MApplication application, EMenuService menuService, Point location,
 			String defaultName, UUID processorId) {
 

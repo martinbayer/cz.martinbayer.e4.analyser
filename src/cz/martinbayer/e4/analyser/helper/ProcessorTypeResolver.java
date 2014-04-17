@@ -1,6 +1,6 @@
 package cz.martinbayer.e4.analyser.helper;
 
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.ConditionalProcessor;
 import cz.martinbayer.analyser.processors.types.InputProcessor;
 import cz.martinbayer.analyser.processors.types.LogProcessor;
@@ -30,7 +30,7 @@ public class ProcessorTypeResolver {
 		}
 	}
 
-	public static ProcessorType getType(LogProcessor<IXMLog> p) {
+	public static ProcessorType getType(LogProcessor<IE4LogsisLog> p) {
 		if (p instanceof InputProcessor) {
 			return ProcessorType.INPUT_PROCESSOR;
 		}
@@ -49,7 +49,7 @@ public class ProcessorTypeResolver {
 		return null;
 	}
 
-	public static String getIcon(LogProcessor<IXMLog> p) {
+	public static String getIcon(LogProcessor<IE4LogsisLog> p) {
 		StringBuffer iconName = new StringBuffer();
 		iconName.append(getType(p).getIconName());
 		iconName.append(".png");

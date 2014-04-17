@@ -17,7 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processorsPool.ProcessorsPool;
 import cz.martinbayer.e4.analyser.Activator;
 import cz.martinbayer.e4.analyser.LoggerFactory;
@@ -45,7 +45,7 @@ public class PalettePart {
 
 		// processors pool must be initialized with bundlecontext
 		ProcessorsPool.getInstance().initialize(Activator.getContext());
-		List<IProcessorItemWrapper<IXMLog>> procs = ProcessorsPool
+		List<IProcessorItemWrapper<IE4LogsisLog>> procs = ProcessorsPool
 				.getInstance().getProcessors();
 		initProcessorsContext(procs, application);
 
@@ -80,8 +80,8 @@ public class PalettePart {
 	 *            to processor wrappers
 	 */
 	private void initProcessorsContext(
-			List<IProcessorItemWrapper<IXMLog>> procs, MApplication application) {
-		for (IProcessorItemWrapper<IXMLog> w : procs) {
+			List<IProcessorItemWrapper<IE4LogsisLog>> procs, MApplication application) {
+		for (IProcessorItemWrapper<IE4LogsisLog> w : procs) {
 			// inject main eclipse context to the processor
 			ContextInjectionFactory.inject(w, application.getContext());
 		}
