@@ -3,11 +3,14 @@ package cz.martinbayer.e4.analyser.canvas.handlers;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
@@ -33,7 +36,9 @@ public class ValidateAndRun {
 
 	@Execute
 	public void execute(
-			@Optional @Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager manager) {
+			MApplication application,
+			@Optional @Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager manager,
+			@Active MWindow window) {
 		ValidationStatus validationResult;
 		validationResult = ScenarioValidator.validateInputProcessors(manager);
 		if (!checkValidity(validationResult)) {
@@ -50,11 +55,16 @@ public class ValidateAndRun {
 					.setStatusMessage(validationResult.getMessage()));
 			return;
 		}
-		InputProcessor<IE4LogsisLog> processor = (InputProcessor<IE4LogsisLog>) manager
-				.getInputProcessors().get(0).getItem().getProcessorLogic()
-				.getProcessor();
+		IProcessorItem inputProcItem = manager.getInputProcessors().get(0);
+		InputProcessor<IE4LogsisLog> processor = (InputProcessor<IE4LogsisLog>) inputProcItem
+				.getItem().getProcessorLogic().getProcessor();
 		try {
-			processor.run();
+			/*
+			 * there can be data saved in collection for other input processors
+			 * so clear them all to avoid memory issues
+			 */
+			manager.clearDataForInputProcsBut(inputProcItem);
+			processor.run(manager.usePreviousData(application, window));
 		} catch (ProcessorFailedException e) {
 			ErrorDialogUtil.showErrorDialog(shell, e);
 			logger.error(e, "Error ocured during processing");

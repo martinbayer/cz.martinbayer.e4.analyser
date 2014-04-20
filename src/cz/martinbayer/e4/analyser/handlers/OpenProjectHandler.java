@@ -12,18 +12,30 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
+import org.osgi.service.prefs.BackingStoreException;
 
 import cz.martinbayer.analyser.processorsPool.ProcessorsPool;
+import cz.martinbayer.e4.analyser.ContextDefaultValues;
 import cz.martinbayer.e4.analyser.ContextVariables;
+import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.canvas.CanvasMouseAdapter;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
 import cz.martinbayer.e4.analyser.canvas.MainCanvas;
+import cz.martinbayer.e4.analyser.persistence.ActualFileHelper;
+import cz.martinbayer.e4.analyser.persistence.SerializationHelper;
 import cz.martinbayer.e4.analyser.widgets.ICanvasItem;
 import cz.martinbayer.e4.analyser.widgets.line.LinePart;
 import cz.martinbayer.e4.analyser.widgets.line.SerializableCanvasConnectionItem;
@@ -31,19 +43,70 @@ import cz.martinbayer.e4.analyser.widgets.line.connection.ConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.line.connection.ItemConnectionConnector;
 import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
 import cz.martinbayer.e4.analyser.widgets.processoritem.SerializableCanvasProcessorItem;
+import cz.martinbayer.utils.StringUtils;
 
 public class OpenProjectHandler {
+	private static Logger logger = LoggerFactory
+			.getInstance(OpenProjectHandler.class);
+
 	@Execute
 	public void execute(
 			IEclipseContext eclipseContext,
 			MApplication application,
 			EMenuService menuService,
-			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager)
-			throws ClassNotFoundException {
+			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager,
+			@Preference(nodePath = ContextVariables.Property.PROJECT_OPERATION) IEclipsePreferences prefs,
+			Shell shell) throws ClassNotFoundException {
 
+		/*
+		 * handle the situation when there is some scenario already opened or in
+		 * progress. False is returned if 'Cancel' is pressed on 'Save changes?'
+		 * dialog.
+		 */
+		if (!SerializationHelper.checkActuallProject(canvasManager,
+				eclipseContext, shell)) {
+			return;
+		} else {
+			canvasManager.removeAll();
+		}
+		/* open Open file dialog with initial value as directory */
+		String openDialogPath = prefs.get(
+				ContextVariables.Property.LAST_OPEN_DIR, "");
+		FileDialog openDialog = new FileDialog(shell, SWT.SINGLE);
+		openDialog.setFilterPath(openDialogPath);
+		openDialog
+				.setFilterExtensions(new String[] { ContextDefaultValues.PROJECT_EXTENSION });
+		if (openDialog.open() == null) {
+			return;
+		}
+		String directory = openDialog.getFilterPath();
+		String fileName = openDialog.getFileName();
+		File selectedFile = null;
+		if (StringUtils.isEmtpy(directory)
+				|| StringUtils.isEmtpy(fileName)
+				|| !(selectedFile = new File(directory + File.separator
+						+ fileName)).exists()) {
+			MessageDialog.openError(shell, "Invalid file",
+					"Please, select valid file.");
+			return;
+		}
+
+		readObjects(selectedFile, eclipseContext, application, menuService,
+				shell, canvasManager);
+		prefs.put(ContextVariables.Property.LAST_OPEN_DIR, directory);
+		try {
+			prefs.flush();
+		} catch (BackingStoreException e) {
+			logger.error(e, "Error occured during preferences flushing");
+		}
+	}
+
+	private void readObjects(File selectedFile, IEclipseContext eclipseContext,
+			MApplication application, EMenuService menuService, Shell shell,
+			ICanvasManager canvasManager) throws ClassNotFoundException {
+		/* read data from selected file */
 		List<Bundle> bundles = ProcessorsPool.getInstance().getProcBundles();
-		File file = new File("c:\\out.obj");
-		try (FileInputStream in = new FileInputStream(file);
+		try (FileInputStream in = new FileInputStream(selectedFile);
 				ObjectInputStreamWithLoader ois = new ObjectInputStreamWithLoader(
 						in, bundles.toArray(new Bundle[] {}))) {
 			Object oo = ois.readObject();
@@ -83,9 +146,12 @@ public class OpenProjectHandler {
 				connection.moveAbove(null);
 				mainCanvas.addItem(connection);
 			}
+			/* no exception thrown so set actual file */
+			ActualFileHelper.setActualFile(eclipseContext, selectedFile);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageDialog.openError(shell, "Unable to open file",
+					"Unable to open selected file.");
+			logger.error(e, "Error ocured during project file opening");
 		}
 
 	}
@@ -136,7 +202,7 @@ class ObjectInputStreamWithLoader extends ObjectInputStream {
 	}
 
 	/**
-	 * Use the given ClassLoader rather than using the system class
+	 * Use bundles to load particular class
 	 */
 	@Override
 	protected Class<?> resolveClass(ObjectStreamClass classDesc)
@@ -162,7 +228,7 @@ class ObjectInputStreamWithLoader extends ObjectInputStream {
 			}
 		}
 		throw new ClassNotFoundException(
-				"Unable to find a class locally and in bundles");
+				"Unable to find a class locally nor in bundles");
 
 	}
 }

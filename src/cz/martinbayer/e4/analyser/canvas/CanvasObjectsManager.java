@@ -7,11 +7,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
+import org.eclipse.e4.ui.workbench.Selector;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.ElementMatcher;
 
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.InputProcessor;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
 import cz.martinbayer.e4.analyser.canvas.event.LineEvent;
+import cz.martinbayer.e4.analyser.canvas.handlers.UsePreviousDataHandler;
 import cz.martinbayer.e4.analyser.widgets.ICanvasItem;
 import cz.martinbayer.e4.analyser.widgets.line.ILine;
 import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
@@ -171,4 +179,53 @@ public class CanvasObjectsManager implements ICanvasManager {
 			}
 		}
 	}
+
+	@Override
+	public boolean usePreviousData(MApplication application, MWindow window) {
+		if (application == null) {
+			return false;
+		}
+		EModelService service = application.getContext().get(
+				EModelService.class);
+		Selector s = new ElementMatcher(
+				UsePreviousDataHandler.USE_PREVIOUS_DATA_MENU_ITEM_ID,
+				MMenuItem.class, (String) null);
+		List<Object> menus = service.findElements(application,
+				EModelService.IN_MAIN_MENU, s);
+		if (menus != null && menus.size() > 0
+				&& menus.get(0) instanceof MMenuItem) {
+			MMenuItem item = (MMenuItem) menus.get(0);
+			return item.isSelected();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeAll() {
+		/*
+		 * remove all processors
+		 */
+		while (getProcessors().size() > 0) {
+			getProcessors().get(0).remove();
+		}
+		/*
+		 * lines should be deleted during processors deletion but to be sure
+		 * delete them too
+		 */
+		while (getLines().size() > 0) {
+			getLines().get(0).remove();
+		}
+		return true;
+	}
+
+	@Override
+	public void clearDataForInputProcsBut(IProcessorItem item) {
+		for (IProcessorItem proc : getInputProcessors()) {
+			if (!proc.getItemId().equals(item.getItemId())) {
+				((InputProcessor<IE4LogsisLog>) proc.getItem()
+						.getProcessorLogic().getProcessor()).clearData();
+			}
+		}
+	}
+
 }

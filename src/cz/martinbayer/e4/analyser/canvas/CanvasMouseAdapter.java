@@ -172,7 +172,7 @@ public class CanvasMouseAdapter extends MouseAdapter {
 			});
 		} else {
 			logger.info(
-					"Only processor item can be uset for DND. Instead {0} used",
+					"Only processor item can be used for DND. Instead {0} used",
 					item);
 		}
 	}

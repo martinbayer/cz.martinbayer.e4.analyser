@@ -2,6 +2,12 @@ package cz.martinbayer.e4.analyser;
 
 public interface ContextVariables {
 
+	public interface Property {
+		public static final String PROJECT_OPERATION = "cz.martinbayer.e4.analyser.projectoperation";
+		public static final String LAST_OPEN_DIR = "lastopendir";
+		public static final String LAST_SAVE_DIR = "lastsavedir";
+	}
+
 	/* palette items selections */
 	public static final String PALETTE_ITEM_SELECTED = "cz.martinbayer.e4.analyser.palette_item_selected";
 
@@ -40,4 +46,9 @@ public interface ContextVariables {
 	/* main canvas property */
 	public static final String MAIN_CANVAS_COMPONENT = "cz_martinbayer_e4_analyser_main_canvas";
 
+	/**
+	 * used to hold the reference to actually opened file (saving, opening other
+	 * projects etc.)
+	 */
+	public static final String ACTUAL_PROJECT_FILE = "cz_martinbayer_e4_analyser_actual_project_file";
 }

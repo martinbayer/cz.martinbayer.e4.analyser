@@ -1,18 +1,14 @@
 package cz.martinbayer.e4.analyser.handlers;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -21,14 +17,16 @@ import org.eclipse.e4.ui.services.EMenuService;
 
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
-import cz.martinbayer.e4.analyser.serialization.SerialClone;
+import cz.martinbayer.e4.analyser.persistence.ActualFileHelper;
+import cz.martinbayer.e4.analyser.persistence.SerializationHelper;
+import cz.martinbayer.e4.analyser.statusbar.StatusHandler;
+import cz.martinbayer.e4.analyser.statusbar.StatusInfo;
 import cz.martinbayer.e4.analyser.widgets.line.ILine;
-import cz.martinbayer.e4.analyser.widgets.line.SerializableCanvasConnectionItem;
 import cz.martinbayer.e4.analyser.widgets.processoritem.IProcessorItem;
-import cz.martinbayer.e4.analyser.widgets.processoritem.SerializableCanvasProcessorItem;
 
 public class SaveProjectHandler {
 
+	public static final String SAVE_PROJECT_COMMAND = "cz.martinbayer.e4.analyser.command.saveproject";
 	@Inject
 	private Logger l;
 
@@ -37,77 +35,41 @@ public class SaveProjectHandler {
 			IEclipseContext eclipseContext,
 			EMenuService service,
 			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager) {
-		l.info("Saving project");
+
+		File actualFile = ActualFileHelper.getActualFile(eclipseContext);
+		if (actualFile == null) {
+			/* no actual file in use so open Save As dialog instead */
+			ECommandService commandService = eclipseContext
+					.get(ECommandService.class);
+			EHandlerService handlerService = eclipseContext
+					.get(EHandlerService.class);
+
+			ParameterizedCommand myCommand = commandService.createCommand(
+					SaveAsProjectHandler.SAVE_AS_PROJECT_COMMAND, null);
+			handlerService.executeHandler(myCommand);
+			return;
+		}
+
 		List<IProcessorItem> processors = canvasManager.getProcessors();
-		List<SerializableCanvasProcessorItem> serializableItems = getSerializableProcessors(processors);
 		List<ILine> lines = canvasManager.getLines();
-		List<SerializableCanvasConnectionItem> serializableLines = getSerializableLines(lines);
-		File f = new File("c:\\out.obj");
-		try (FileOutputStream fos = new FileOutputStream(f);
-				FileChannel channel = fos.getChannel()) {
+		StatusInfo info = SerializationHelper.saveProject(actualFile,
+				processors, lines);
+		if (info != null) {
+			StatusHandler.setStatus(info);
+			l.error("Status returned while saving project:"
+					+ info.getStatusMessage());
 
-			ByteBuffer src = null;
-
-			ByteArrayOutputStream baos = null;
-			ObjectOutputStream oos = null;
-			byte[] bytes = null;
-
-			// create a byteArrayOutputStream to get byte[] finally
-			baos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(baos);
-			oos.writeObject(serializableItems);
-			oos.writeObject(serializableLines);
-
-			bytes = baos.toByteArray();
-
-			// wrap those byte[] to ByteBuffer, which will be send over
-			// channel
-			// to persist
-			src = ByteBuffer.wrap(bytes);
-
-			if (channel.isOpen()) {
-				channel.write(src);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
+			l.info("Project succesfully saved.");
 		}
 
-	}
-
-	private List<SerializableCanvasConnectionItem> getSerializableLines(
-			List<ILine> lines) {
-		if (lines != null) {
-			ArrayList<SerializableCanvasConnectionItem> serializableConns = new ArrayList<>();
-			for (ILine line : lines) {
-				serializableConns
-						.add(new SerializableCanvasConnectionItem(line));
-			}
-			return serializableConns;
-		}
-		return new ArrayList<>();
-	}
-
-	private List<SerializableCanvasProcessorItem> getSerializableProcessors(
-			List<IProcessorItem> processors) {
-		if (processors != null) {
-			ArrayList<SerializableCanvasProcessorItem> serializableProcessors = new ArrayList<>();
-			for (IProcessorItem processor : processors) {
-				SerializableCanvasProcessorItem serializableProcItem = new SerializableCanvasProcessorItem(
-						processor);
-				serializableProcItem = SerialClone.clone(serializableProcItem);
-				serializableProcItem.resetData();
-				serializableProcessors.add(serializableProcItem);
-			}
-			return serializableProcessors;
-		}
-		return new ArrayList<>();
 	}
 
 	@CanExecute
-	public boolean canExecute() {
-		// TODO Your code goes here
-		return true;
+	public boolean canExecute(
+			@Named(value = ContextVariables.CANVAS_OBJECTS_MANAGER) ICanvasManager canvasManager) {
+		return canvasManager.getProcessors().size() > 0
+				|| canvasManager.getLines().size() > 0;
 	}
 
 }
