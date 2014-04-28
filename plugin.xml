@@ -22,6 +22,10 @@
                name="lifeCycleURI"
                value="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.LifecycleManager">
          </property>
+         <property
+               name="windowImages"
+               value="icons/icon_16.png,icons/icon_32.png,icons/icon_48.png,icons/icon_64.png,icons/icon_128.png">
+         </property>
       </product>
    </extension>
 

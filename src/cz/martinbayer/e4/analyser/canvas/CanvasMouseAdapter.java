@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Text;
 
 import cz.martinbayer.analyser.processors.IProcessorItemWrapper;
 import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
+import cz.martinbayer.e4.analyser.Constants;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.canvas.event.CanvasEvent;
@@ -61,7 +62,8 @@ public class CanvasMouseAdapter extends MouseAdapter {
 		if (selectedPaletteItem instanceof ProcessorPaletteItem
 				&& /*
 					 * don 't do any operations if root in the tree is selected
-					 */((ProcessorPaletteItem) selectedPaletteItem).getParent() != null) {
+					 */((ProcessorPaletteItem) selectedPaletteItem).getParent() != null
+				&& e.button == Constants.LEFT_MOUSE_BUTTON) {
 			handleProcessorItemCreation(e,
 					(ProcessorPaletteItem) selectedPaletteItem,
 					hoveredCanvasItem);

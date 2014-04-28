@@ -1,11 +1,12 @@
 package cz.martinbayer.e4.analyser;
 
-public interface ContextVariables {
+public interface ContextVariables extends Constants {
 
 	public interface Property {
 		public static final String PROJECT_OPERATION = "cz.martinbayer.e4.analyser.projectoperation";
 		public static final String LAST_OPEN_DIR = "lastopendir";
 		public static final String LAST_SAVE_DIR = "lastsavedir";
+		public static final String PLUGINS_REPO = "pluginsrepo";
 	}
 
 	/* palette items selections */
@@ -51,4 +52,6 @@ public interface ContextVariables {
 	 * projects etc.)
 	 */
 	public static final String ACTUAL_PROJECT_FILE = "cz_martinbayer_e4_analyser_actual_project_file";
+
+	public static final String PROCESSING_CANCELED = "cz_martinbayer_e4_analyser_processing_canceled";
 }

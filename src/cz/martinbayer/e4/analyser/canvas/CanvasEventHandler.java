@@ -11,10 +11,12 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.types.LogProcessor;
+import cz.martinbayer.e4.analyser.Constants;
 import cz.martinbayer.e4.analyser.ContextVariables;
 import cz.martinbayer.e4.analyser.LoggerFactory;
 import cz.martinbayer.e4.analyser.Messages;
@@ -113,10 +115,14 @@ public abstract class CanvasEventHandler implements ICanvas {
 			Object selectedPaletteItem = application.getContext().get(
 					ContextVariables.PALETTE_ITEM_SELECTED);
 			if (selectedPaletteItem instanceof ConnectionPaletteItem) {
-				handleConnectionCreation(
-						(MouseEvent) processorEvent.getOrigEvent(),
-						(ConnectionPaletteItem) selectedPaletteItem,
-						processorEvent.getItem());
+				TypedEvent origEvent = processorEvent.getOrigEvent();
+				if (origEvent instanceof MouseEvent
+						&& ((MouseEvent) origEvent).button == Constants.LEFT_MOUSE_BUTTON) {
+					handleConnectionCreation(
+							(MouseEvent) processorEvent.getOrigEvent(),
+							(ConnectionPaletteItem) selectedPaletteItem,
+							processorEvent.getItem());
+				}
 			}
 		} else {/*
 				 * main thought is that if context is changed for some key and

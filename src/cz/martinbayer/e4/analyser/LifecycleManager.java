@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import cz.martinbayer.e4.analyser.canvas.CanvasObjectsManager;
 import cz.martinbayer.e4.analyser.canvas.ICanvasManager;
+import cz.martinbayer.e4.analyser.handlers.InstallHandler;
 import cz.martinbayer.e4.analyser.log.SLF4JLoggerWrapper;
 import cz.martinbayer.e4.analyser.statusbar.StatusHandler;
 
@@ -58,5 +59,14 @@ public class LifecycleManager implements ContextVariables, ContextDefaultValues 
 		ICanvasManager canvasObjectsManager = CanvasObjectsManager
 				.getInstance();
 		context.set(CANVAS_OBJECTS_MANAGER, canvasObjectsManager);
+
+		/*
+		 * FIXME- it is here because parameterized command doesnt work for me
+		 * (probably bug in eclipse 4). It seems to me that even after param is
+		 * added to application model, it is not found during command creation
+		 * and it failes with NPE. Value must be replaced by 'false' after
+		 * installation
+		 */
+		context.set(InstallHandler.INSTALL_PARAM_APP_STARTING, true);
 	}
 }

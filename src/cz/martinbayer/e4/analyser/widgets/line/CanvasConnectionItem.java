@@ -538,7 +538,6 @@ public class CanvasConnectionItem extends Composite implements Serializable,
 	}
 
 	public void moveLinePart(int moveX, int moveY, LinePart partType) {
-		System.out.println("movement:" + new Point(moveX, moveY));
 		switch (partType) {
 		case START_SPOT:
 			setStartPoint(this.startPoint.x + moveX, this.startPoint.y + moveY);

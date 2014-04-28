@@ -3,6 +3,7 @@
 
 <product name="cz.martinbayer.e4.analyser" id="cz.martinbayer.e4.analyser.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -11,14 +12,18 @@
       </vmArgsMac>
    </launcherArgs>
 
-   <windowImages/>
+   <windowImages i16="/cz.martinbayer.e4.analyser/icons/icon_16.png" i32="/cz.martinbayer.e4.analyser/icons/icon_32.png" i48="/cz.martinbayer.e4.analyser/icons/icon_48.png" i64="/cz.martinbayer.e4.analyser/icons/icon_64.png" i128="/cz.martinbayer.e4.analyser/icons/icon_128.png"/>
 
-   <launcher>
+
+   <launcher name="E4Logsis">
       <solaris/>
-      <win useIco="false">
-         <bmp/>
+      <win useIco="true">
+         <ico path="/cz.martinbayer.e4.analyser/icons/icon.ico"/>
+         <bmp
+            winSmallLow="/cz.martinbayer.e4.analyser/icons/icon_16_8.bmp"/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
@@ -124,6 +129,8 @@
       <feature id="org.eclipse.ecf.filetransfer.source.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.source.feature"/>
+      <feature id="org.eclipse.nebula.widgets.cdatetime.feature" version="0.14.0.201404181808"/>
+      <feature id="org.eclipse.nebula.cwt.feature"/>
    </features>
 
 

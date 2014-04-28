@@ -84,7 +84,6 @@ class CleanerThread implements Runnable {
 				@Override
 				public void run() {
 					statusLabel.setText("");
-					System.out.println("cleaned");
 				}
 			});
 

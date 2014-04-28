@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_tgspoKI4EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.application">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_wVHSAKI4EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.trimmedwindow.0">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_wVHSAKI4EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.trimmedwindow.0" label="E4Logsis" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/icon.png">
     <children xsi:type="basic:PartSashContainer" xmi:id="_WJYvgKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.partsashcontainer.0" horizontal="true">
       <children xsi:type="basic:PartStack" xmi:id="_Y10gkKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.partstack.0" containerData="20">
         <children xsi:type="basic:Part" xmi:id="_a1J7EKI5EeOZB_p0_meNYQ" elementId="cz.martinbayer.e4.analyser.part.0" contributionURI="bundleclass://cz.martinbayer.e4.analyser/cz.martinbayer.e4.analyser.palette.PalettePart" label="Palette" iconURI="platform:/plugin/cz.martinbayer.e4.analyser/icons/palette.png"/>

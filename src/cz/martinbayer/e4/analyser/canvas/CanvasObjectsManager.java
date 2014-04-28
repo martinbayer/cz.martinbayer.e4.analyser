@@ -227,5 +227,4 @@ public class CanvasObjectsManager implements ICanvasManager {
 			}
 		}
 	}
-
 }
